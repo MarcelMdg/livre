@@ -1,0 +1,1543 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Créer Votre Boutique E-commerce de Luxe : PHP & FedaPay</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-okaidia.min.css" rel="stylesheet">
+
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+
+        :root {
+            --clr-bg: #0a0a0a;             /* Couleur de fond principale (presque noir) */
+            --clr-surface: #111;          /* Couleur des surfaces (cartes produits, modals) */
+            --clr-surface-light: #1e1e1e; /* Couleur des surfaces plus claires (tableau, formulaires) */
+            --clr-primary: #00f5ff;       /* Couleur d'accent principale (cyan néon) */
+            --clr-secondary: #ff0050;     /* Couleur d'accent secondaire (rose/rouge vif) */
+            --clr-text: #f1f1f1;          /* Couleur du texte principal */
+            --radius: 12px;               /* Rayon d'arrondi standard pour les éléments */
+            --transition: all .35s cubic-bezier(.25,.8,.25,1); /* Transition douce pour les animations */
+
+            /* Variables pour le sommaire, titres, etc. (ajustées pour le thème sombre) */
+            --sommaire-bg: var(--clr-surface-light);
+            --sommaire-border: var(--clr-surface);
+            --sommaire-link: var(--clr-primary);
+            --sommaire-link-hover: var(--clr-secondary);
+
+            --heading1-color: var(--clr-primary);
+            --heading2-color: var(--clr-secondary);
+            --heading3-color: var(--clr-text); /* Couleur par défaut du texte pour H3 */
+
+            --info-bg: #28a74533; /* Vert avec opacité */
+            --info-border: #28a745;
+            --info-text: #d4edda;
+
+            --tip-bg: #0072c633; /* Bleu avec opacité */
+            --tip-border: #0072c6;
+            --tip-text: #e7f3ff;
+
+            --warning-bg: #ffc10733; /* Jaune avec opacité */
+            --warning-border: #ffc107;
+            --warning-text: #fff3cd;
+
+            --footer-bg: #080808;
+            --footer-border: #00f5ff33;
+            --footer-text: #aaa;
+        }
+
+        /* Reset CSS basique pour uniformiser le rendu entre les navigateurs */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            font-size: 14px;
+            line-height: 1.6;
+            color: var(--clr-text);
+            background: var(--clr-bg);
+            max-width: 820px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+            counter-reset: chapter;
+        }
+
+        a {
+            text-decoration: none;
+            color: var(--clr-primary);
+            transition: color 0.3s;
+        }
+
+        a:hover {
+            color: var(--clr-secondary);
+        }
+
+        /* Sommaire interactif */
+        #sommaire {
+            background: var(--sommaire-bg);
+            padding: 1.5rem;
+            border-radius: var(--radius);
+            margin-bottom: 2rem;
+            border: 1px solid var(--sommaire-border);
+            box-shadow: 0 5px 15px rgba(0,0,0,.3);
+        }
+
+        #sommaire ol {
+            margin-left: 1rem;
+            padding: 0; /* Important pour éviter double padding */
+        }
+
+        #sommaire li {
+            margin-bottom: 0.5rem;
+        }
+
+        #sommaire a {
+            color: var(--sommaire-link);
+        }
+
+        #sommaire a:hover {
+            color: var(--sommaire-link-hover);
+        }
+
+        /* Titres avec numérotation */
+        h1 {
+            counter-increment: chapter;
+            color: var(--heading1-color);
+            font-size: 2.2em;
+            font-weight: 700;
+            border-bottom: 2px solid var(--heading1-color);
+            padding-bottom: 0.2em;
+            margin: 1.2em 0 0.6em;
+        }
+
+        h1::before {
+            content: counter(chapter) ". ";
+        }
+
+        h2 {
+            color: var(--heading2-color);
+            font-size: 1.6em;
+            font-weight: 600;
+            margin: 1.2em 0 0.6em;
+            padding-left: 1rem;
+            border-left: 4px solid var(--heading2-color);
+        }
+
+        h3 {
+            color: var(--heading3-color);
+            font-size: 1.25em;
+            font-weight: 600;
+            margin: 1em 0 0.5em;
+        }
+
+        p {
+            margin-bottom: 1em;
+        }
+
+        ul {
+            margin-bottom: 1em;
+            margin-left: 1.5em;
+        }
+
+        ol {
+            margin-bottom: 1em;
+            margin-left: 1.5em;
+        }
+
+        pre {
+            background: #2d2d2d; /* Fond foncé pour le code */
+            color: #ccc;
+            padding: 1rem;
+            border-radius: var(--radius);
+            overflow-x: auto; /* Permet le défilement horizontal si le code est trop long */
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--clr-surface-light);
+            box-shadow: 0 2px 8px rgba(0,0,0,.5);
+        }
+
+        code {
+            font-family: "Fira Code", "Consolas", "Monaco", "Andale Mono", "Ubuntu Mono", monospace;
+            font-size: 0.9em;
+        }
+
+        /* Encadrés d'astuces */
+        .tip, .warning, .info {
+            padding: 1rem;
+            margin: 1.5rem 0;
+            border-radius: var(--radius);
+            border-left: 5px solid;
+            font-weight: 500;
+            box-shadow: 0 2px 8px rgba(0,0,0,.3);
+        }
+
+        .tip {
+            background: var(--tip-bg);
+            border-color: var(--tip-border);
+            color: var(--tip-text);
+        }
+
+        .warning {
+            background: var(--warning-bg);
+            border-color: var(--warning-border);
+            color: var(--warning-text);
+        }
+
+        .info {
+            background: var(--info-bg);
+            border-color: var(--info-border);
+            color: var(--info-text);
+        }
+
+        .info strong, .tip strong, .warning strong {
+            color: var(--clr-text); /* Rendre le titre de l'encadré visible */
+        }
+
+        /* Bouton toggle */
+        #theme-toggle {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            z-index: 1000;
+            background: var(--clr-surface-light);
+            border: 1px solid var(--clr-surface);
+            color: var(--clr-primary);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0,0,0,.4);
+            transition: var(--transition);
+        }
+
+        #theme-toggle:hover {
+            background: var(--clr-surface);
+            color: var(--clr-secondary);
+            transform: scale(1.05);
+        }
+
+        /* Pied de page */
+        .simple-footer {
+            background: var(--footer-bg);
+            border-top: 1px solid var(--footer-border);
+            width: 100%;
+            text-align: center;
+            padding: 1.2rem 0;
+            margin-top: 4rem;
+            font-size: 0.9rem;
+            color: var(--footer-text);
+            border-radius: var(--radius);
+        }
+
+        .simple-footer a {
+            color: var(--footer-text);
+        }
+
+        .simple-footer a:hover {
+            color: var(--clr-primary);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+            h1 {
+                font-size: 1.8em;
+            }
+            h2 {
+                font-size: 1.4em;
+            }
+            #theme-toggle {
+                width: 35px;
+                height: 35px;
+                font-size: 1rem;
+            }
+        }
+
+        /* Impression */
+        @media print {
+            body {
+                max-width: none;
+                color: #000;
+                background: #fff;
+            }
+            .no-print {
+                display: none;
+            }
+            pre {
+                background: #f4f4f4 !important;
+                color: #333 !important;
+                border: 1px solid #ddd !important;
+                box-shadow: none !important;
+            }
+            .tip, .warning, .info {
+                background: #eee !important;
+                border-color: #bbb !important;
+                color: #333 !important;
+                box-shadow: none !important;
+            }
+            h1, h2, h3 {
+                color: #000 !important;
+            }
+            #sommaire {
+                border: 1px solid #ccc !important;
+                background: #f9f9f9 !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button id="theme-toggle" class="btn btn-sm btn-outline-primary no-print" onclick="toggleTheme()">🌓</button>
+
+    <nav id="sommaire" class="no-print">
+        <h2 class="h4">📚 Sommaire</h2>
+        <ol>
+            <li><a href="#ch1">Introduction : Créer sa Boutique E-commerce de Luxe (Exemple : Montres Rolex)</a></li>
+            <li><a href="#ch2">La Fondation – Afficher les Produits (`index.php`)</a>
+                <ol>
+                    <li><a href="#ch2-1">Préparation de l'Environnement et des Données</a></li>
+                    <li><a href="#ch2-2">La Section "Héro" : Une Introduction Visuelle</a></li>
+                    <li><a href="#ch2-3">Affichage Dynamique des Produits</a></li>
+                    <li><a href="#ch2-4">Conclusion du Chapitre</a></li>
+                </ol>
+            </li>
+            <li><a href="#ch3">Le Design – Rendre la Boutique "Premium" (`style.css`)</a>
+                <ol>
+                    <li><a href="#ch3-1">Les Fondations du Style : Variables CSS et Reset Global</a></li>
+                    <li><a href="#ch3-2">La Section Héro : L'Impact Visuel de l'Accueil</a></li>
+                    <li><a href="#ch3-3">Les Cartes Produits : L'Affichage de Votre Collection</a></li>
+                    <li><a href="#ch3-4">Les Modales : Afficher les Détails des Produits</a></li>
+                    <li><a href="#ch3-5">Les Pages du Panier et de Paiement (Aperçu Styilistique)</a></li>
+                    <li><a href="#ch3-6">Le Pied de Page : Une Touche Finale Simple</a></li>
+                    <li><a href="#ch3-7">La Réactivité : S'adapter à Tous les Écrans</a></li>
+                    <li><a href="#ch3-8">Conclusion du Chapitre</a></li>
+                </ol>
+            </li>
+            <li><a href="#ch4">Le Cœur de la Vente – Le Panier (`panier.php`)</a>
+                <ol>
+                    <li><a href="#ch4-1">Initialisation et Traitement des Actions du Panier</a></li>
+                    <li><a href="#ch4-2">Affichage du Contenu du Panier</a></li>
+                    <li><a href="#ch4-3">Conclusion du Chapitre</a></li>
+                </ol>
+            </li>
+            <li><a href="#ch5">La Caisse – Finaliser la Commande (`checkout.php`)</a>
+                <ol>
+                    <li><a href="#ch5-1">Préparation et Vérification du Panier</a></li>
+                    <li><a href="#ch5-2">Intégration de FedaPay et Traitement du Formulaire</a></li>
+                    <li><a href="#ch5-3">Structure HTML du Formulaire de Paiement</a></li>
+                    <li><a href="#ch5-4">Conclusion du Chapitre</a></li>
+                </ol>
+            </li>
+            <li><a href="#ch6">Confirmation et Sécurité – Le Rappel de Paiement (`callback.php`)</a>
+                <ol>
+                    <li><a href="#ch6-1">Initialisation et Récupération de la Transaction</a></li>
+                    <li><a href="#ch6-2">Points Cruciaux pour la Production (Récapitulatif et Approfondissement)</a></li>
+                    <li><a href="#ch6-3">Conclusion : Prochaines Étapes et Aller Plus Loin</a></li>
+                </ol>
+            </li>
+        </ol>
+    </nav>
+
+    <h1 id="ch1">Introduction : Créer Votre Boutique E-commerce de Luxe (Exemple : Montres Rolex)</h1>
+    <p>Bienvenue dans ce guide pratique dédié à la création d'une boutique e-commerce fonctionnelle, axée sur le segment du luxe avec un exemple concret : une plateforme de vente de montres haut de gamme. Dans un monde de plus en plus numérisé, maîtriser les fondamentaux du commerce en ligne est une compétence inestimable. Cet ebook vous accompagnera pas à pas dans la construction d'un site web transactionnel, depuis l'affichage des produits jusqu'à l'intégration sécurisée d'une solution de paiement en ligne.</p>
+    <p>Que vous soyez un développeur débutant souhaitant mettre en pratique ses connaissances en PHP, un entrepreneur désireux de comprendre les rouages techniques d'une boutique en ligne, ou simplement curieux d'explorer le développement web, ce guide est fait pour vous. Nous nous concentrerons sur une approche pragmatique, en utilisant des exemples de code clairs et commentés pour illustrer chaque concept.</p>
+    <p><strong>Ce que vous allez apprendre :</strong></p>
+    <ul>
+        <li><strong>Structure de base d'une application web PHP :</strong> Comment organiser votre code pour afficher dynamiquement des produits.</li>
+        <li><strong>Design et Expérience Utilisateur :</strong> L'art de rendre une interface visuellement attractive et intuitive grâce au CSS, en adoptant un style "premium".</li>
+        <li><strong>Gestion du Panier d'Achat :</strong> Comprendre le fonctionnement des sessions PHP pour permettre aux utilisateurs d'ajouter et de gérer leurs sélections.</li>
+        <li><strong>Processus de Commande Sécurisé :</strong> Les étapes essentielles pour finaliser un achat, collecter les informations client et de livraison.</li>
+        <li><strong>Intégration d'une Passerelle de Paiement :</strong> Un focus détaillé sur l'utilisation de **FedaPay**, une solution de paiement adaptée au contexte africain, pour gérer les transactions en ligne.</li>
+        <li><strong>Sécurité des Transactions :</strong> Les bonnes pratiques indispensables pour protéger votre boutique et vos utilisateurs contre les menaces courantes.</li>
+    </ul>
+    <p>Au travers d'un projet réaliste de vente de montres Rolex, nous allons démystifier le processus de développement e-commerce. Préparez-vous à transformer des lignes de code en une expérience d'achat en ligne concrète et performante.</p>
+    <p>Commençons cette aventure passionnante !</p>
+
+    <div class="info">
+        <strong>💡 Info :</strong> Ce guide utilise PHP 8+ et Bootstrap 5 pour une expérience moderne.
+    </div>
+
+    ---
+
+    <h1 id="ch2">La Fondation – Afficher les Produits (`index.php`)</h1>
+    <p>Chaque boutique en ligne commence par la présentation de ses produits. La page d'accueil, ou page de liste des produits, est la première impression que vos clients auront de votre offre. Dans ce chapitre, nous allons explorer la structure fondamentale de notre boutique de montres de luxe, en nous concentrant sur le fichier <code>index.php</code>. Ce script PHP est responsable de la récupération et de l'affichage dynamique de nos montres, tout en offrant une interface utilisateur intuitive.</p>
+    <p>Notre approche est simple pour cet exemple : les données de nos produits sont stockées directement dans un tableau PHP. Bien que pour une application à grande échelle, une base de données (comme MySQL) serait indispensable, cette méthode nous permet de nous concentrer sur la logique d'affichage sans la complexité de la gestion de base de données.</p>
+
+    <h2 id="ch2-1">1.1 Préparation de l'Environnement et des Données</h2>
+    <p>Au début de notre fichier <code>index.php</code>, nous initialisons la session PHP et configurons le rapport d'erreurs pour faciliter le débogage. Ensuite, nous définons un tableau PHP nommé <code>$products</code>. Ce tableau contient les informations essentielles pour chaque montre que nous souhaitons afficher : un identifiant unique (<code>id</code>), un nom (<code>name</code>), un prix (<code>price</code>), une image (<code>image</code>), et une brève description.</p>
+    <pre><code class="language-php">
+&lt;?php
+// DOIT ÊTRE LA PREMIÈRE LIGNE EXÉCUTABLE
+session_start();
+
+// Configuration pour afficher toutes les erreurs pendant le développement
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL & ~E_DEPRECATED & ~E_NOTICE);
+
+/* ---------- LISTE DES PRODUITS (Données statiques pour l'exemple) ---------- */
+$products = [
+    [
+        'id' => 1,
+        'name' => 'Rolex Submariner',
+        'price' => 19000,
+        'image' => 'pictures/picture1.jpg',
+        'description' => 'Rolex Submariner Date 41 mm – cadran noir, lunette tournante Cerachrom.'
+    ],
+    [
+        'id' => 2,
+        'name' => 'Rolex Daytona',
+        'price' => 29990,
+        'image' => 'pictures/picture22.jpg',
+        'description' => 'Rolex Cosmograph Daytona 40 mm 18 ct – bracelet Oyster, lunette tachymétrique.'
+    ],
+    [
+        'id' => 3,
+        'name' => 'Rolex Datejust',
+        'price' => 38700,
+        'image' => 'pictures/picture3.jpg',
+        'description' => 'Rolex Datejust 41 mm – cadran bleu soleillé, index bâtons.'
+    ],
+    [
+        'id' => 4,
+        'name' => 'Rolex GMT-Master II Batman',
+        'price' => 15000,
+        'image' => 'pictures/picture4.jpg',
+        'description' => 'GMT-Master II 40 mm – lunette bicolore bleu/noir « Batman », aiguille 24 h.'
+    ],
+    [
+        'id' => 5,
+        'name' => 'Rolex Yacht-Master Rhodium',
+        'price' => 22000,
+        'image' => 'pictures/picture5.jpg',
+        'description' => 'Yacht-Master 40 mm – cadran rhodium, lunette tournante 60 minutes.'
+    ],
+    [
+        'id' => 6,
+        'name' => 'Rolex Day-Date',
+        'price' => 37000,
+        'image' => 'pictures/picture6.jpg',
+        'description' => 'Day-Date 40 mm 18 ct – cadran chocolat, index diamants, bracelet President.'
+    ]
+];
+
+// Initialisation du panier si ce n'est pas déjà fait
+if (!isset($_SESSION['cart'])) $_SESSION['cart'] = [];
+
+// Inclusion de l'en-tête de la page (header.php) qui contient les balises HTML de début
+include 'inc/header.php';
+
+// Affichage des messages flash (notifications) si présents dans la session
+if (isset($_SESSION['flash_message'])) {
+    echo "&lt;div class='alert alert-premium'&gt;" . $_SESSION['flash_message'] . "&lt;/div&gt;";
+    unset($_SESSION['flash_message']); // Supprime le message après l'affichage
+}
+?&gt;
+    </code></pre>
+    <p><strong>Explications du Code :</strong></p>
+    <ul>
+        <li><code>session_start();</code>: Cette fonction est cruciale pour utiliser les **sessions PHP**, qui nous permettront de stocker des informations spécifiques à l'utilisateur (comme le contenu de son panier) d'une page à l'autre. Elle doit toujours être la première instruction PHP exécutée sur une page.</li>
+        <li><code>ini_set(...)</code> et <code>error_reporting(...)</code>: Ces lignes sont des outils de **débogage**. Elles garantissent que toutes les erreurs PHP sont affichées à l'écran, ce qui est très utile pendant le développement pour identifier et corriger les problèmes. <strong>Attention : Pour un site en production, ces options devraient être désactivées ou configurées pour enregistrer les erreurs dans un fichier journal, et non les afficher publiquement.</strong></li>
+        <li><code>$products</code>: Un **tableau associatif** qui simule une base de données de produits. Chaque élément du tableau est lui-même un tableau associatif décrivant une montre.</li>
+        <li><code>if (!isset($_SESSION['cart'])) $_SESSION['cart'] = [];</code>: Cette ligne initialise la variable de session <code>$_SESSION['cart']</code> comme un tableau vide si elle n'existe pas encore. C'est ici que nous allons stocker les identifiants des produits et leurs quantités que l'utilisateur ajoute à son panier.</li>
+        <li><code>include 'inc/header.php';</code>: Cette instruction inclut le contenu du fichier <code>header.php</code>. Ce fichier contient généralement le début du code HTML de votre page, incluant les balises <code>&lt;head&gt;</code>, le début du <code>&lt;body&gt;</code>, la navigation, etc. Cela permet de centraliser les éléments récurrents et de maintenir une structure de code propre.</li>
+        <li><code>$_SESSION['flash_message']</code>: Nous utilisons cette variable de session pour afficher des **notifications temporaires** à l'utilisateur, comme "Article ajouté au panier" ou "Paiement réussi". Une fois affiché, le message est supprimé de la session.</li>
+    </ul>
+
+    <div class="tip">
+        <strong>✅ Astuce :</strong> Pour des projets plus importants, **remplacez le tableau `$products` par une connexion à une base de données** (par exemple, MySQL avec PDO) pour une gestion plus robuste des produits.
+    </div>
+
+    <h2 id="ch2-2">1.2 La Section "Héro" : Une Introduction Visuelle</h2>
+    <p>La section "Héro" est le premier élément visuel majeur de notre page d'accueil. Conçue pour être percutante, elle utilise une image d'arrière-plan, un overlay semi-transparent et un contenu textuel accrocheur pour immerger le visiteur dans l'univers du luxe des montres. Un bouton d'appel à l'action (<code>btn-cta</code>) invite l'utilisateur à explorer la collection.</p>
+    <pre><code class="language-html">
+&lt;!-- HERO SECTION --&gt;
+&lt;body&gt;
+&lt;section class="hero"&gt;
+  &lt;div class="hero-overlay"&gt;&lt;/div&gt;
+  &lt;div class="hero-content"&gt;
+    &lt;h1 class="hero-title"&gt;Nouveau Drop — Quantités&amp;nbsp;Limitées&lt;/h1&gt;
+    &lt;p class="hero-subtitle"&gt;Gardiennes du temps, les montres Rolex subliment l'héritage et l'ambition, parées pour l'éternité.&lt;/p&gt;
+    &lt;a href="#products" class="btn-cta"&gt;Explorer la collection&lt;/a&gt;
+  &lt;/div&gt;
+&lt;/section&gt;
+    </code></pre>
+    <p><strong>Explications du Code :</strong></p>
+    <ul>
+        <li><code>&lt;section class="hero"&gt;</code>: Un conteneur sémantique pour la section introductive. Sa classe CSS le stylise avec une image de fond et un positionnement flexible.</li>
+        <li><code>&lt;div class="hero-overlay"&gt;</code>: Une couche semi-transparente placée au-dessus de l'image de fond. Elle améliore la lisibilité du texte et donne un aspect plus sophistiqué.</li>
+        <li><code>&lt;div class="hero-content"&gt;</code>: Contient le titre (<code>h1</code>), le sous-titre (<code>p</code>) et le bouton d'appel à l'action (<code>a</code>). Ces éléments sont centrés et stylisés pour ressortir.</li>
+        <li><code>&lt;a href="#products" class="btn-cta"&gt;</code>: Un lien qui ancre la page vers la section des produits (<code>#products</code>), offrant une navigation fluide.</li>
+    </ul>
+
+    <h2 id="ch2-3">1.3 Affichage Dynamique des Produits</h2>
+    <p>La partie principale de notre page est la grille de produits. Grâce à une boucle PHP, nous parcourons le tableau <code>$products</code> défini précédemment et générons dynamiquement une carte HTML pour chaque montre. Chaque carte affiche l'image, le nom, la description, le prix et deux boutons : "Détails" et "Ajouter au panier".</p>
+    <pre><code class="language-html">
+&lt;!-- PRODUCTS SECTION --&gt;
+&lt;section id="products" class="container"&gt;
+  &lt;div class="products-grid"&gt;
+    &lt;?php foreach ($products as $p): ?&gt;
+      &lt;div class="product-card"&gt;
+        &lt;img src="&lt;?= $p['image'] ?&gt;" alt="&lt;?= $p['name'] ?&gt;"&gt;
+        &lt;div class="product-card-body"&gt;
+          &lt;h5&gt;&lt;?= $p['name'] ?&gt;&lt;/h5&gt;
+          &lt;p&gt;&lt;?= $p['description'] ?&gt;&lt;/p&gt;
+          &lt;div class="product-card-price"&gt;&lt;?= number_format($p['price']) ?&gt; FCFA&lt;/div&gt;
+          &lt;div class="product-card-actions"&gt;
+            &lt;!-- Bouton Détails qui ouvre une modale Bootstrap --&gt;
+            &lt;button class="btn-outline-info"
+                    data-bs-toggle="modal"
+                    data-bs-target="#detailModal&lt;?= $p['id'] ?&gt;"&gt;Détails&lt;/button&gt;
+            &lt;!-- Formulaire pour ajouter l'article au panier --&gt;
+            &lt;form action="panier.php" method="post" class="add-form"&gt;
+              &lt;input type="hidden" name="product_id" value="&lt;?= $p['id'] ?&gt;"&gt;
+              &lt;button type="submit" name="action" value="add" class="btn-primary"&gt;Ajouter au panier&lt;/button&gt;
+            &lt;/form&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+
+      &lt;!-- Modale Bootstrap pour les détails du produit --&gt;
+      &lt;div class="modal fade" id="detailModal&lt;?= $p['id'] ?&gt;" tabindex="-1" aria-hidden="true"&gt;
+        &lt;div class="modal-dialog modal-dialog-centered"&gt;
+          &lt;div class="modal-content"&gt;
+            &lt;div class="modal-header"&gt;
+              &lt;h5 class="modal-title"&gt;&lt;?= $p['name'] ?&gt;&lt;/h5&gt;
+              &lt;button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"&gt;&lt;/button&gt;
+            &lt;/div&gt;
+            &lt;div class="modal-body"&gt;
+              &lt;img src="&lt;?= $p['image'] ?&gt;" alt="&lt;?= $p['name'] ?&gt;" class="img-fluid mb-3"&gt;
+              &lt;p&gt;&lt;?= $p['description'] ?&gt;&lt;/p&gt;
+              &lt;p class="price"&gt;&lt;?= number_format($p['price']) ?&gt; FCFA&lt;/p&gt;
+            &lt;/div&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;?php endforeach; ?&gt;
+  &lt;/div&gt;
+&lt;/section&gt;
+&lt;/body&gt;
+    </code></pre>
+    <p><strong>Explications du Code :</strong></p>
+    <ul>
+        <li><code>&lt;section id="products" class="container"&gt;</code>: La section principale des produits. L'<code>id="products"</code> permet au bouton "Explorer la collection" de la section héro d'y naviguer.</li>
+        <li><code>&lt;div class="products-grid"&gt;</code>: Un conteneur qui sera stylisé avec **CSS Grid** pour organiser les cartes produits de manière responsive.</li>
+        <li><code>&lt;?php foreach ($products as $p): ?&gt; ... &lt;?php endforeach; ?&gt;</code>: C'est le cœur de l'affichage dynamique. Cette boucle PHP itère sur chaque produit (<code>$p</code>) dans le tableau <code>$products</code>. Pour chaque produit, le code HTML à l'intérieur de la boucle est généré.</li>
+        <li><code>&lt;img src="&lt;?= $p['image'] ?&gt;" alt="&lt;?= $p['name'] ?&gt;"&gt;</code>: Affiche l'image du produit. Notez la syntaxe courte <code>&lt;?= ... ?&gt;</code> qui est un raccourci pour <code>&lt;?php echo ... ?&gt;</code>. Il est crucial d'inclure l'attribut <code>alt</code> pour l'accessibilité et le SEO.</li>
+        <li><code>&lt;h5&gt;&lt;?= $p['name'] ?&gt;&lt;/h5&gt;</code> et <code>&lt;p&gt;&lt;?= $p['description'] ?&gt;&lt;/p&gt;</code>: Affichent le nom et la description du produit.</li>
+        <li><code>&lt;div class="product-card-price"&gt;&lt;?= number_format($p['price']) ?&gt; FCFA&lt;/div&gt;</code>: Affiche le prix du produit. La fonction <code>number_format()</code> formate le nombre pour une meilleure lisibilité (par exemple, ajoute des séparateurs de milliers). Nous ajoutons "FCFA" pour la devise, pertinente au contexte du Bénin.</li>
+        <li><strong>Bouton "Détails" (Modale Bootstrap):</strong>
+            <ul>
+                <li><code>data-bs-toggle="modal"</code> et <code>data-bs-target="#detailModal&lt;?= $p['id'] ?&gt;"</code>: Ces attributs sont des fonctionnalités de **Bootstrap** qui permettent de déclencher l'ouverture d'une fenêtre modale. Chaque modale a un ID unique (<code>detailModal</code> suivi de l'ID du produit) pour s'assurer que le bon produit est affiché.</li>
+            </ul>
+        </li>
+        <li><strong>Formulaire "Ajouter au panier":</strong>
+            <ul>
+                <li><code>&lt;form action="panier.php" method="post" class="add-form"&gt;</code>: Un formulaire HTML qui envoie les données à <code>panier.php</code> via la méthode POST.</li>
+                <li><code>&lt;input type="hidden" name="product_id" value="&lt;?= $p['id'] ?&gt;"&gt;</code>: Un champ caché qui transmet l'ID du produit au script <code>panier.php</code> sans être visible pour l'utilisateur.</li>
+                <li><code>&lt;button type="submit" name="action" value="add" class="btn-primary"&gt;</code>: Le bouton qui, une fois cliqué, soumet le formulaire et indique à <code>panier.php</code> d'effectuer l'action "add".</li>
+            </ul>
+        </li>
+    </ul>
+
+    <h2 id="ch2-4">1.4 Conclusion du Chapitre</h2>
+    <p>Pour compléter notre page, nous incluons le fichier <code>inc/footer.php</code>, qui contient les balises HTML de fin de document, les liens vers les scripts JavaScript (comme Bootstrap) et potentiellement des informations de copyright ou de contact.</p>
+    <pre><code class="language-php">
+&lt;?php include 'inc/footer.php'; ?&gt;
+    </code></pre>
+    <p>Ce chapitre a jeté les bases de notre boutique en ligne en vous montrant comment afficher dynamiquement une liste de produits. Nous avons couvert l'initialisation des sessions, la structure de base d'une page PHP avec ses includes, la création d'une section "Héro" attrayante, et l'affichage des produits avec leurs détails et options d'ajout au panier.</p>
+    <p>Dans le prochain chapitre, nous plongerons dans l'aspect visuel de notre boutique. Nous explorerons le fichier <code>style.css</code> pour comprendre comment donner à notre site cet aspect "premium" et assurer une expérience utilisateur cohérente et agréable sur tous les appareils.</p>
+
+    ---
+
+    <h1 id="ch3">Le Design – Rendre la Boutique "Premium" (`style.css`)</h1>
+    <p>Après avoir posé les fondations structurelles avec PHP, il est temps de donner à notre boutique de montres de luxe l'apparence qu'elle mérite. Le design est crucial pour une expérience utilisateur agréable, surtout dans le segment du luxe. Dans ce chapitre, nous allons explorer en détail le fichier <code>style.css</code>, le cœur de notre esthétique "premium".</p>
+    <p>Nous avons opté pour un thème sombre avec des accents vibrants de cyan et de magenta, inspiré des interfaces high-tech et du néon. Ce choix de couleurs, combiné à des typographies modernes et des animations subtiles, vise à créer une ambiance sophistiquée et captivante.</p>
+
+    <h2 id="ch3-1">2.1 Les Fondations du Style : Variables CSS et Reset Global</h2>
+    <p>Pour assurer cohérence et facilité de maintenance, nous commençons notre feuille de style par la définition de **variables CSS** et un **reset global** simple. Les variables nous permettent de centraliser nos choix de couleurs, de rayons d'arrondi et de transitions, rendant les modifications futures rapides et efficaces.</p>
+    <pre><code class="language-css">
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&amp;display=swap');
+
+:root{
+  --clr-bg:#0a0a0a;             /* Couleur de fond principale (presque noir) */
+  --clr-surface:#111;          /* Couleur des surfaces (cartes produits, modals) */
+  --clr-surface-light:#1e1e1e; /* Couleur des surfaces plus claires (tableau, formulaires) */
+  --clr-primary:#00f5ff;       /* Couleur d'accent principale (cyan néon) */
+  --clr-secondary:#ff0050;     /* Couleur d'accent secondaire (rose/rouge vif) */
+  --clr-text:#f1f1f1;          /* Couleur du texte principal */
+  --radius:12px;               /* Rayon d'arrondi standard pour les éléments */
+  --transition:all .35s cubic-bezier(.25,.8,.25,1); /* Transition douce pour les animations */
+}
+
+/* Reset CSS basique pour uniformiser le rendu entre les navigateurs */
+*{margin:0;padding:0;box-sizing:border-box;}
+
+/* Styles de base pour le corps de la page et les liens */
+body{background:var(--clr-bg);color:var(--clr-text);font-family:'Poppins',sans-serif;}
+a{text-decoration:none;color:inherit;}
+
+/* Style pour les messages flash (notifications) */
+.alert-premium{background:var(--clr-primary);color:#000;text-align:center;padding:.75rem;font-weight:600;margin-bottom:1rem;}
+    </code></pre>
+    <p><strong>Explications du Code :</strong></p>
+    <ul>
+        <li><code>@import url(...)</code>: Importe la police **Poppins** depuis Google Fonts. C'est une police moderne et lisible qui convient bien à notre thème.</li>
+        <li><code>:root { ... }</code>: Ce sélecteur définit des **variables CSS** (ou propriétés personnalisées) qui peuvent être réutilisées partout dans la feuille de style. C'est une pratique moderne qui améliore considérablement la maintenabilité de votre code CSS. Par exemple, <code>--clr-bg</code> définit la couleur de fond principale de votre site.</li>
+        <li><code>*{margin:0;padding:0;box-sizing:border-box;}</code>: Un **reset CSS** universel. Il supprime les marges et paddings par défaut de tous les éléments HTML et configure le <code>box-sizing</code> à <code>border-box</code>. Cela simplifie grandement la gestion des tailles et espacements.</li>
+        <li><code>body</code> et <code>a</code>: Définissent les styles de base pour le corps du document (couleur de fond, texte, police) et s'assurent que les liens héritent de la couleur du texte et n'ont pas de soulignement par défaut.</li>
+        <li><code>.alert-premium</code>: Style pour les messages de notification qui apparaissent en haut de la page, utilisant notre couleur primaire pour un impact visuel.</li>
+    </ul>
+
+    <h2 id="ch3-2">2.2 La Section Héro : L'Impact Visuel de l'Accueil</h2>
+    <p>La section héro est la première chose que le visiteur voit. Elle doit être engageante et refléter l'identité de la marque. Nous utilisons une image de fond, un overlay pour améliorer la lisibilité du texte, et un design typographique fort.</p>
+    <pre><code class="language-css">
+/* HERO SECTION */
+.hero{position:relative;height:70vh;background:url('pictures/hero-bg.jpg') center/cover no-repeat;display:flex;align-items:center;justify-content:center;text-align:center;}
+.hero-overlay{position:absolute;inset:0;background:rgba(0,0,0,.65);}
+.hero-content{position:relative;z-index:2;max-width:600px;padding:0 1.5rem;}
+.hero-title{font-size:clamp(2.5rem,5vw,4rem);font-weight:700;margin-bottom:.5rem;}
+.hero-subtitle{font-size:1.25rem;margin-bottom:2rem;opacity:.85;}
+
+/* Bouton d'appel à l'action pour le héros et le paiement */
+.btn-cta{background:linear-gradient(135deg,var(--clr-primary),var(--clr-secondary));color:#000;padding:.9rem 2.5rem;border-radius:var(--radius);font-weight:600;display:inline-block;transition:var(--transition);}
+.btn-cta:hover{transform:translateY(-3px);box-shadow:0 10px 30px rgba(0,245,255,.35);}
+
+/* Boutons secondaires (contours) */
+.btn-outline-danger,.btn-outline{background:transparent;border:1px solid var(--clr-secondary);color:var(--clr-secondary);padding:.6rem 1.2rem;border-radius:var(--radius);margin-right:.5rem;transition:var(--transition);}
+.btn-outline:hover{background:var(--clr-secondary);color:#000;}
+.btn-outline-danger:hover{background:var(--clr-secondary);color:#000;}
+    </code></pre>
+    <p><strong>Explications du Code :</strong></p>
+    <ul>
+        <li><code>.hero</code>: Définit la section héro avec une hauteur relative (<code>70vh</code>), une image de fond (<code>url('pictures/hero-bg.jpg')</code>) centrée et couvrant l'espace, et utilise Flexbox pour centrer son contenu.</li>
+        <li><code>.hero-overlay</code>: Crée une superposition semi-transparente noire qui s'étend sur toute la section héro. Cela aide le texte à ressortir sur l'image.</li>
+        <li><code>.hero-title</code> et <code>.hero-subtitle</code>: Stylisent le titre et le sous-titre de la section héro. La fonction <code>clamp()</code> pour la <code>font-size</code> du titre est une technique moderne de **design responsif** qui permet à la taille du texte de s'adapter fluidement entre une taille minimale, une taille préférée (basée sur la largeur de la vue), et une taille maximale.</li>
+        <li><code>.btn-cta</code>: Le bouton d'appel à l'action. Il utilise un **dégradé linéaire** (<code>linear-gradient</code>) combinant nos couleurs primaire et secondaire pour un effet visuel saisissant. Une transition et un effet d'ombre (<code>box-shadow</code>) au survol (<code>:hover</code>) ajoutent une touche de dynamisme.</li>
+        <li><code>.btn-outline-danger</code>, <code>.btn-outline</code>: Styles pour des boutons avec des bordures, typiques pour des actions secondaires ou des annulations, reprenant les couleurs de notre palette.</li>
+    </ul>
+
+    <h2 id="ch3-3">2.3 Les Cartes Produits : L'Affichage de Votre Collection</h2>
+    <p>Chaque montre est présentée dans une "carte" individuelle, conçue pour être à la fois informative et visuellement attractive. Ces cartes sont organisées dans une grille pour un affichage ordonné et responsif.</p>
+    <pre><code class="language-css">
+/* PRODUCTS */
+.container{max-width:1200px;margin:auto;padding:0 1rem;} /* Conteneur central pour le contenu */
+.products-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:2.5rem;padding:5rem 0;}
+.product-card{background:var(--clr-surface);border-radius:var(--radius);overflow:hidden;transition:var(--transition);box-shadow:0 5px 15px rgba(0,0,0,.3);}
+.product-card:hover{transform:translateY(-7px);box-shadow:0 15px 30px rgba(0,245,255,.25);} /* Effet au survol */
+.product-card img{height:260px;width:100%;object-fit:cover;transition:var(--transition);}
+.product-card:hover img{transform:scale(1.05);} /* Zoom image au survol */
+.product-card-body{padding:1.5rem;display:flex;flex-direction:column;flex-grow:1;}
+.product-card-body h5{font-size:1.35rem;font-weight:600;margin-bottom:.5rem;}
+.product-card-price{color:var(--clr-primary);font-size:1.4rem;font-weight:700;margin:.75rem 0 1.25rem;}
+.product-card-actions{display:flex;gap:.75rem;margin-top:auto;}
+
+/* Boutons d'action pour les produits */
+.btn-primary{background:var(--clr-primary);color:#000;border:none;padding:.6rem 1.2rem;border-radius:var(--radius);font-weight:600;cursor:pointer;transition:var(--transition);}
+.btn-primary:hover{background:#fff;color:#000;}
+.btn-outline-info{background:transparent;border:1px solid var(--clr-primary);color:var(--clr-primary);padding:.6rem 1.2rem;border-radius:var(--radius);font-weight:600;cursor:pointer;transition:var(--transition);}
+.btn-outline-info:hover{background:var(--clr-primary);color:#000;}
+    </code></pre>
+    <p><strong>Explications du Code :</strong></p>
+    <ul>
+        <li><code>.container</code>: Un conteneur de largeur maximale qui centre le contenu de la page, assurant un alignement propre.</li>
+        <li><code>.products-grid</code>: Utilise **CSS Grid** pour créer une mise en page flexible. <code>repeat(auto-fit, minmax(280px, 1fr))</code> signifie que les cartes s'ajusteront automatiquement à la largeur disponible, avec une largeur minimale de 280px et une largeur maximale égale pour chaque colonne. <code>gap</code> définit l'espacement entre les cartes.</li>
+        <li><code>.product-card</code>: Stylise chaque carte individuelle avec un arrière-plan tiré de <code>var(--clr-surface)</code>, des bords arrondis et une ombre douce. Une transition (<code>transition:var(--transition);</code>) est appliquée pour des effets de survol fluides.</li>
+        <li><code>.product-card:hover</code>: Au survol, la carte se soulève légèrement (<code>transform:translateY(-7px)</code>) et son ombre s'intensifie, créant un effet de profondeur.</li>
+        <li><code>product-card img</code> et <code>product-card:hover img</code>: L'image du produit remplit la carte (<code>object-fit:cover</code>) et un léger zoom (<code>transform:scale(1.05)</code>) est appliqué au survol de la carte, améliorant l'interactivité.</li>
+        <li><code>.product-card-body</code>: Contient le texte et les actions de la carte. <code>display:flex</code> et <code>flex-direction:column</code> permettent d'aligner les éléments verticalement. <code>margin-top:auto</code> sur <code>.product-card-actions</code> pousse les boutons vers le bas de la carte, assurant un alignement uniforme même si les descriptions varient en longueur.</li>
+        <li><code>.product-card-price</code>: Met en valeur le prix avec notre couleur primaire et une taille de police plus grande.</li>
+        <li><code>.btn-primary</code> et <code>.btn-outline-info</code>: Styles pour les boutons "Ajouter au panier" et "Détails", utilisant nos couleurs thématiques pour un rendu cohérent.</li>
+    </ul>
+
+    <h2 id="ch3-4">2.4 Les Modales : Afficher les Détails des Produits</h2>
+    <p>Les modales Bootstrap sont utilisées pour afficher les détails complets de chaque produit sans quitter la page. Le style de ces modales est harmonisé avec le thème sombre de la boutique.</p>
+    <pre><code class="language-css">
+/* MODAL */
+.modal-content{background:var(--clr-surface);border:none;border-radius:var(--radius);}
+.modal-header{background:var(--clr-surface-light);border:none;}
+.modal-title{color:var(--clr-primary);}
+.btn-close-white{filter:invert(1);} /* Inverse la couleur du bouton de fermeture pour le rendre blanc */
+.price{color:var(--clr-primary);font-size:1.6rem;font-weight:700;}
+    </code></pre>
+    <p><strong>Explications du Code :</strong></p>
+    <ul>
+        <li><code>.modal-content</code>, <code>.modal-header</code>, <code>.modal-title</code>: Surdéfinissent les styles par défaut de Bootstrap pour les modales, en appliquant nos couleurs de surface et de texte, et des bords arrondis, pour une intégration parfaite dans notre thème sombre.</li>
+        <li><code>.btn-close-white</code>: Un ajustement intelligent pour le bouton de fermeture par default de Bootstrap. <code>filter:invert(1)</code> inverse ses couleurs, le rendant visible sur un fond sombre.</li>
+        <li><code>.price</code>: Met en forme le prix à l'intérieur de la modale, en le rendant plus grand et en couleur primaire pour le mettre en évidence.</li>
+    </ul>
+
+    <h2 id="ch3-5">2.5 Les Pages du Panier et de Paiement (Aperçu Stylistique)</h2>
+    <p>Bien que nous détaillerons le code PHP de ces sections dans les chapitres suivants, il est important de noter ici les styles CSS qui leur sont appliqués pour maintenir la cohérence visuelle.</p>
+    <pre><code class="language-css">
+/* CART */
+.cart-section{padding:4rem 0;}
+.empty-cart{text-align:center;padding:3rem 0;}
+.empty-cart p{font-size:1.5rem;margin-bottom:2rem;}
+.premium-table{width:100%;border-collapse:collapse;background:var(--clr-surface-light);border-radius:var(--radius);overflow:hidden;}
+.premium-table th,.premium-table td{padding:1rem;text-align:left;}
+.premium-table th{background:var(--clr-surface);}
+.item-name{font-weight:600;}
+.stepper-form{display:flex;align-items:center;gap:.5rem;}
+.stepper-form button{background:var(--clr-primary);border:none;color:#000;width:30px;height:30px;border-radius:50%;cursor:pointer;font-weight:700;}
+.stepper-form span{min-width:30px;text-align:center;}
+.btn-del{background:none;border:none;color:var(--clr-secondary);font-size:1.8rem;cursor:pointer;line-height:1;}
+.cart-footer{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;margin-top:2rem;gap:1rem;}
+.total{font-size:1.5rem;font-weight:700; color:#00f5ff;}
+
+/* ---------- CHECKOUT ---------- */
+.checkout-wrapper{padding:5rem 1rem;background:var(--clr-bg);}
+.narrow{max-width:720px;margin:auto;}
+.neon-title{font-size:2.5rem;font-weight:700;text-align:center;margin-bottom:2.5rem;
+            background:linear-gradient(90deg,var(--clr-primary),var(--clr-secondary));
+            -webkit-background-clip:text;-webkit-text-fill-color:transparent;} /* Titre effet néon */
+
+.recap-box{background:var(--clr-surface-light);border-radius:var(--radius);padding:2rem;margin-bottom:2.5rem;}
+.recap-title{font-size:1.5rem;font-weight:600;margin-bottom:1rem;color:var(--clr-primary);}
+.recap-item{display:flex;justify-content:space-between;padding:.5rem 0;border-bottom:1px solid #222;}
+.recap-total{text-align:right;font-size:1.35rem;font-weight:700;margin-top:1rem;color:var(--clr-primary);}
+
+.checkout-form{background:var(--clr-surface-light);border-radius:var(--radius);padding:2rem;}
+.form-title{font-size:1.5rem;font-weight:600;margin-bottom:1.5rem;color:var(--clr-primary);}
+.form-row{display:flex;gap:1rem;}
+.form-row input{flex:1;}
+.checkout-form input{width:100%;margin-bottom:1rem;padding:.9rem 1rem;border:none;border-radius:var(--radius);background:#1e1e1e;color:var(--clr-text);}
+.checkout-form input::placeholder{color:#555;}
+.btn-block{width:100%;margin-top:1rem;}
+    </code></pre>
+    <p><strong>Explications du Code (aperçu) :</strong></p>
+    <ul>
+        <li><strong>Panier (<code>.premium-table</code>, <code>.stepper-form</code>, <code>.cart-footer</code>):</strong> Les styles du panier sont conçus pour présenter les articles de manière claire dans un tableau, avec des boutons de quantité stylisés et un récapitulatif du total.</li>
+        <li><strong>Paiement (<code>.checkout-wrapper</code>, <code>.neon-title</code>, <code>.recap-box</code>, <code>.checkout-form</code>):</strong> La page de paiement utilise des conteneurs étroits et des boîtes pour organiser les informations. Le <code>.neon-title</code> est un effet visuel clé, utilisant un dégradé de texte avec <code>background-clip: text</code> et <code>text-fill-color: transparent</code> pour créer une apparence lumineuse et futuriste. Les champs de formulaire sont également stylisés pour s'intégrer au thème sombre.</li>
+    </ul>
+
+    <h2 id="ch3-6">2.6 Le Pied de Page : Une Touche Finale Simple</h2>
+    <p>Un pied de page simple est inclus pour fournir des informations de base et maintenir une fin de page propre.</p>
+    <pre><code class="language-css">
+/* ---------- FOOTER SIMPLE ---------- */
+.simple-footer{
+  background:#080808;
+  border-top:1px solid #00f5ff33; /* Bordure supérieure subtile */
+  width:100%;
+  text-align:center;
+  padding:1.2rem 0;
+  margin-top:6rem;
+  font-size:0.9rem;
+  color:#aaa;
+}
+    </code></pre>
+    <p><strong>Explications du Code :</strong></p>
+    <ul>
+        <li><code>.simple-footer</code>: Un pied de page avec un fond très sombre, une fine bordure supérieure lumineuse, et un texte centré de couleur claire. Le <code>margin-top</code> assure un espace suffisant avec le contenu précédent.</li>
+    </ul>
+
+    <h2 id="ch3-7">2.7 La Réactivité : S'adapter à Tous les Écrans</h2>
+    <p>L'aspect "premium" ne se limite pas à l'esthétique, il inclut aussi une adaptabilité parfaite à toutes les tailles d'écran. Nos **requêtes média (<code>@media</code>)** ajustent les styles pour les appareils mobiles et les tablettes.</p>
+    <pre><code class="language-css">
+/* Ajoutez ceci à la fin de votre fichier CSS */
+
+/* --- MOBILE SPECIFIC STYLES --- */
+
+/* Pour les écrans jusqu'à 768px de large (tablettes et petits laptops) */
+@media (max-width: 768px) {
+  .hero { height: 60vh; }
+  .hero-title { font-size: clamp(2rem, 8vw, 3rem); }
+  .hero-subtitle { font-size: 1rem; margin-bottom: 1.5rem; }
+  .btn-cta { padding: 0.75rem 2rem; font-size: 0.9rem; }
+  .btn-outline-danger, .btn-outline { padding: 0.5rem 1rem; font-size: 0.9rem; }
+
+  .products-grid { gap: 1.5rem; padding: 3rem 0; }
+  .product-card-body h5 { font-size: 1.2rem; }
+  .product-card-price { font-size: 1.2rem; margin: 0.5rem 0 1rem; }
+  .product-card-actions { flex-direction: column; gap: 0.5rem; } /* Empile les boutons */
+  .btn-primary, .btn-outline-info { width: 100%; } /* Boutons pleine largeur */
+
+  .cart-section { padding: 2rem 0; }
+  .empty-cart p { font-size: 1.2rem; margin-bottom: 1.5rem; }
+  .premium-table th, .premium-table td { padding: 0.75rem; font-size: 0.9rem; }
+  .stepper-form button { width: 25px; height: 25px; font-size: 0.9rem; }
+  .stepper-form span { min-width: 25px; font-size: 0.9rem; }
+  .btn-del { font-size: 1.5rem; }
+  .cart-footer { flex-direction: column; align-items: flex-start; } /* Empile le footer du panier */
+  .total { font-size: 1.3rem; margin-bottom: 1rem; }
+
+  .checkout-wrapper { padding: 3rem 1rem; }
+  .neon-title { font-size: 2rem; margin-bottom: 1.5rem; }
+  .recap-box, .checkout-form { padding: 1.5rem; }
+  .recap-title, .form-title { font-size: 1.3rem; margin-bottom: 1rem; }
+  .form-row { flex-direction: column; gap: 0; } /* Empile les champs de formulaire */
+  .checkout-form input { margin-bottom: 0.75rem; padding: 0.75rem 1rem; }
+}
+
+/* Pour les écrans très petits (smartphones en mode portrait) */
+@media (max-width: 480px) {
+  body { font-size: 0.9rem; }
+  .alert-premium { padding: 0.5rem; font-size: 0.8rem; }
+  .hero { height: 50vh; }
+  .hero-content { padding: 0 1rem; }
+  .hero-title { font-size: clamp(1.8rem, 10vw, 2.5rem); }
+  .hero-subtitle { font-size: 0.9rem; margin-bottom: 1rem; }
+  .btn-cta { padding: 0.6rem 1.8rem; font-size: 0.85rem; }
+  .products-grid { padding: 2rem 0; }
+  .product-card-body h5 { font-size: 1.1rem; }
+  .product-card-price { font-size: 1.1rem; margin: 0.5rem 0 0.8rem; }
+  .product-card-actions { gap: 0.4rem; }
+  .btn-primary, .btn-outline-info { padding: 0.5rem 1rem; font-size: 0.85rem; }
+  .premium-table th, .premium-table td { padding: 0.5rem; font-size: 0.8rem; }
+  .item-name { font-size: 0.9rem; }
+  .stepper-form button { width: 20px; height: 20px; font-size: 0.8rem; }
+  .stepper-form span { min-width: 20px; font-size: 0.8rem; }
+  .btn-del { font-size: 1.3rem; }
+  .total { font-size: 1.1rem; }
+  .neon-title { font-size: 1.8rem; margin-bottom: 1rem; }
+  .recap-box, .checkout-form { padding: 1rem; }
+  .recap-title, .form-title { font-size: 1.1rem; margin-bottom: 0.8rem; }
+  .checkout-form input { margin-bottom: 0.5rem; padding: 0.6rem 0.8rem; font-size: 0.9rem; }
+}
+    </code></pre>
+    <p><strong>Explications du Code :</strong></p>
+    <ul>
+        <li><code>@media (max-width: 768px)</code> et <code>@media (max-width: 480px)</code>: Ces blocs définissent des styles qui ne s'appliquent que lorsque la largeur de l'écran est inférieure ou égale à la valeur spécifiée.</li>
+        <li><strong>Ajustements clés :</strong> Pour les écrans plus petits, nous réduisons la taille des polices (<code>font-size</code>), les espacements (<code>padding</code>, <code>margin</code>, <code>gap</code>), la hauteur de la section héro et les tailles des boutons. Les éléments qui étaient côte à côte (comme les boutons des cartes produits ou les champs de formulaire dans une <code>form-row</code>) sont souvent basculés en <code>flex-direction: column</code> pour s'empiler verticalement, garantissant une bonne lisibilité et une navigation facile sur les petits écrans.</li>
+    </ul>
+
+    <h2 id="ch3-8">2.8 Conclusion du Chapitre</h2>
+    <p>Ce chapitre vous a plongé dans l'univers du design web, en vous montrant comment transformer une structure HTML et PHP brute en une interface utilisateur élégante et responsive. Nous avons vu l'importance des variables CSS pour la maintenabilité, l'impact d'une section héro bien conçue, la présentation efficace des produits via une grille et des modales, et l'adaptation du design à différentes tailles d'écran grâce aux requêtes média.</p>
+    <p>La combinaison des couleurs sombres, des accents néon et des animations subtiles crée une ambiance qui correspond parfaitement à l'image d'une boutique de luxe.</p>
+    <p>Dans le prochain chapitre, nous aborderons le cœur de toute boutique en ligne : la gestion du panier d'achat. Vous découvrirez comment les utilisateurs peuvent sélectionner, modifier et gérer les articles qu'ils souhaitent acheter.</p>
+
+    ---
+
+    <h1 id="ch4">Le Cœur de la Vente – Le Panier (`panier.php`)</h1>
+    <p>Le panier d'achat est une fonctionnalité indispensable pour toute boutique en ligne. C'est l'endroit où les clients peuvent rassembler les articles qu'ils souhaitent acheter, ajuster les quantités, ou retirer des produits avant de passer à la caisse. Dans ce chapitre, nous allons détailler le fonctionnement du fichier <code>panier.php</code>, qui gère toutes ces interactions.</p>
+    <p>Notre panier est basé sur le concept de **sessions PHP**. Les sessions permettent de stocker des informations spécifiques à un utilisateur sur le serveur, et de les rendre disponibles sur différentes pages de votre site pendant la durée de sa visite. C'est idéal pour maintenir le contenu du panier d'un client même s'il navigue entre les pages de produits et la page du panier.</p>
+
+    <h2 id="ch4-1">3.1 Initialisation et Traitement des Actions du Panier</h2>
+    <p>Le script <code>panier.php</code> commence par initialiser la session et inclure la liste des produits (qui est la même que celle utilisée sur <code>index.php</code>). Ensuite, il traite les différentes actions que l'utilisateur peut effectuer : ajouter un article, augmenter/diminuer sa quantité, ou le supprimer complètement.</p>
+    <pre><code class="language-php">
+&lt;?php
+// DOIT ÊTRE LA PREMIÈRE LIGNE EXÉCUTABLE
+session_start();
+
+// Configuration pour afficher toutes les erreurs pendant le développement
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL & ~E_DEPRECATED & ~E_NOTICE);
+
+/* ---------- LISTE DES PRODUITS (Identique à index.php) ---------- */
+$produits = [
+    ['id' => 1, 'nom' => 'Rolex Submariner', 'prix' => 19000, 'image' => 'pictures/picture1.jpg'],
+    ['id' => 2, 'nom' => 'Rolex Daytona',        'prix' => 29990, 'image' => 'pictures/picture22.jpg'],
+    ['id' => 3, 'nom' => 'Rolex Datejust',            'prix' => 38700, 'image' => 'pictures/picture3.jpg'],
+    ['id' => 4, 'nom' => 'Rolex GMT-Master II Batman',      'prix' => 15000, 'image' => 'pictures/picture4.jpg'],
+    ['id' => 5, 'nom' => 'Rolex Yacht-Master Rhodium',           'prix' => 22000, 'image' => 'pictures/picture5.jpg'],
+    ['id' => 6, 'nom' => 'Rolex Day-Date',           'prix' => 37000, 'image' => 'pictures/picture6.jpg']
+];
+
+// Initialisation du panier si ce n'est pas déjà fait
+if (!isset($_SESSION['cart'])) $_SESSION['cart'] = [];
+
+/* ---------- TRAITEMENT DES ACTIONS DU PANIER ---------- */
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $product_id = $_POST['product_id'] ?? null;
+    $action     = $_POST['action']     ?? null;
+
+    if ($product_id) {
+        switch ($action) {
+            case 'add':
+                // Ajoute 1 au produit si déjà dans le panier, sinon l'ajoute avec quantité 1
+                $_SESSION['cart'][$product_id] = ($_SESSION['cart'][$product_id] ?? 0) + 1;
+                $_SESSION['flash_message'] = "Article ajouté au panier !";
+                break;
+            case 'increase':
+                // Augmente la quantité d'un article
+                if (isset($_SESSION['cart'][$product_id])) {
+                    $_SESSION['cart'][$product_id]++;
+                }
+                break;
+            case 'decrease':
+                // Diminue la quantité, supprime l'article si la quantité atteint 0
+                if (isset($_SESSION['cart'][$product_id])) {
+                    $_SESSION['cart'][$product_id]--;
+                    if ($_SESSION['cart'][$product_id] &lt;= 0) {
+                        unset($_SESSION['cart'][$product_id]);
+                    }
+                }
+                break;
+            case 'remove':
+                // Supprime complètement l'article du panier
+                unset($_SESSION['cart'][$product_id]);
+                $_SESSION['flash_message'] = "Article retiré du panier.";
+                break;
+        }
+    }
+    // Redirige toujours pour éviter la resoumission du formulaire
+    header("Location: panier.php");
+    exit();
+}
+    </code></pre>
+    <p><strong>Explications du Code :</strong></p>
+    <ul>
+        <li><code>session_start();</code>: Indispensable pour accéder et manipuler la variable superglobale <code>$_SESSION</code>.</li>
+        <li><code>$produits</code>: Le même tableau de produits que dans <code>index.php</code>. En production, cette liste serait chargée depuis une base de données pour éviter la duplication et assurer la cohérence.</li>
+        <li><code>if (!isset($_SESSION['cart'])) $_SESSION['cart'] = [];</code>: S'assure que le panier existe toujours en session. C'est un tableau associatif où les clés sont les <code>id</code> des produits et les valeurs sont leurs quantités.</li>
+        <li><code>if ($_SERVER['REQUEST_METHOD'] === 'POST')</code>: Ce bloc de code s'exécute uniquement lorsque le formulaire du panier est soumis (par exemple, quand un utilisateur clique sur "Ajouter au panier" depuis <code>index.php</code>, ou sur les boutons + / - / Supprimer sur la page du panier).</li>
+        <li><code>$product_id = $_POST['product_id'] ?? null;</code>: Récupère l'ID du produit envoyé via le formulaire POST. L'opérateur <code>??</code> (null coalescing operator) est une syntaxe concise pour vérifier si la variable est définie et non-null, sinon il attribue <code>null</code>.</li>
+        <li><code>$action = $_POST['action'] ?? null;</code>: Récupère l'action demandée (add, increase, decrease, remove).</li>
+        <li><code>switch ($action)</code>: Une structure de contrôle qui exécute différentes logiques en fonction de la valeur de <code>$action</code>.
+            <ul>
+                <li><code>case 'add'</code>: Si l'article est déjà dans le panier, sa quantité est augmentée de 1. Sinon, il est ajouté avec une quantité de 1. Un message flash est défini.</li>
+                <li><code>case 'increase'</code> / <code>case 'decrease'</code>: Augmentent ou diminuent la quantité d'un article existant. Si la quantité diminue à 0 ou moins, l'article est retiré du panier (<code>unset</code>).</li>
+                <li><code>case 'remove'</code>: Supprime directement l'article du panier.</li>
+            </ul>
+        </li>
+        <li><code>header("Location: panier.php"); exit();</code>: **Très important !** Après chaque action POST, le script redirige le navigateur vers la même page (<code>panier.php</code>). Cela empêche la resoumission accidentelle du formulaire si l'utilisateur rafraîchit la page, ce qui pourrait entraîner des ajouts multiples au panier.</li>
+    </ul>
+
+    <h2 id="ch4-2">3.2 Affichage du Contenu du Panier</h2>
+    <p>Après le traitement des actions, le script prépare les données pour l'affichage. Il parcourt le panier en session (<code>$_SESSION['cart']</code>), récupère les détails complets de chaque produit à partir du tableau <code>$produits</code>, et calcule le prix total du panier.</p>
+    <pre><code class="language-php">
+&lt;?php
+/* ---------- CONSTRUCTION DU PANIER POUR L'AFFICHAGE ---------- */
+$lignes = []; // Tableau qui contiendra les détails de chaque ligne du panier (produit, quantité, sous-total)
+$total  = 0;   // Variable pour le total du panier
+
+if (!empty($_SESSION['cart'])) {
+    foreach ($_SESSION['cart'] as $id => $qte) {
+        foreach ($produits as $p) {
+            if ($p['id'] == $id) {
+                // Ajoute une ligne au tableau $lignes avec le produit, la quantité et le sous-total
+                $lignes[] = ['p'=>$p,'q'=>$qte,'st'=>$p['prix']*$qte];
+                $total   += $p['prix'] * $qte; // Ajoute au total général
+                break; // Sort de la boucle interne une fois le produit trouvé
+            }
+        }
+    }
+}
+
+// Inclusion de l'en-tête de la page
+include 'inc/header.php';
+
+// Affichage des messages flash
+if (isset($_SESSION['flash_message'])) {
+    echo "&lt;div class='alert-premium'&gt;{$_SESSION['flash_message']}&lt;/div&gt;";
+    unset($_SESSION['flash_message']);
+}
+?&gt;
+
+&lt;section class="cart-section container"&gt;
+  &lt;h1 class="neon-title"&gt;Votre Panier&lt;/h1&gt;
+
+  &lt;?php if (empty($lignes)): // Si le panier est vide ?&gt;
+    &lt;div class="empty-cart"&gt;
+      &lt;p&gt;Votre panier est vide pour le moment.&lt;/p&gt;
+      &lt;a href="index.php" class="btn-cta"&gt;Retour à la boutique&lt;/a&gt;
+    &lt;/div&gt;
+  &lt;?php else: // Si le panier contient des articles ?&gt;
+    &lt;div class="table-responsive"&gt;
+      &lt;table class="premium-table"&gt;
+        &lt;thead&gt;
+          &lt;tr&gt;
+            &lt;th&gt;Produit&lt;/th&gt;
+            &lt;th&gt;Prix&lt;/th&gt;
+            &lt;th&gt;Quantité&lt;/th&gt;
+            &lt;th&gt;Sous-total&lt;/th&gt;
+            &lt;th&gt;&lt;/th&gt;
+          &lt;/tr&gt;
+        &lt;/thead&gt;
+        &lt;tbody&gt;
+          &lt;?php foreach ($lignes as $l): ?&gt;
+            &lt;tr&gt;
+              &lt;td&gt;
+                &lt;div class="d-flex align-items-center"&gt;
+                  &lt;img src="&lt;?= $l['p']['image'] ?&gt;" alt="&lt;?= $l['p']['nom'] ?&gt;" width="50" class="me-3"&gt;
+                  &lt;span class="item-name"&gt;&lt;?= $l['p']['nom'] ?&gt;&lt;/span&gt;
+                &lt;/div&gt;
+              &lt;/td&gt;
+              &lt;td&gt;&lt;?= number_format($l['p']['prix']) ?&gt; FCFA&lt;/td&gt;
+              &lt;td&gt;
+                &lt;div class="stepper-form"&gt;
+                  &lt;!-- Formulaire pour diminuer la quantité --&gt;
+                  &lt;form action="panier.php" method="post"&gt;
+                    &lt;input type="hidden" name="product_id" value="&lt;?= $l['p']['id'] ?&gt;"&gt;
+                    &lt;button type="submit" name="action" value="decrease"&gt;-&lt;/button&gt;
+                  &lt;/form&gt;
+                  &lt;span&gt;&lt;?= $l['q'] ?&gt;&lt;/span&gt;
+                  &lt;!-- Formulaire pour augmenter la quantité --&gt;
+                  &lt;form action="panier.php" method="post"&gt;
+                    &lt;input type="hidden" name="product_id" value="&lt;?= $l['p']['id'] ?&gt;"&gt;
+                    &lt;button type="submit" name="action" value="increase"&gt;+&lt;/button&gt;
+                  &lt;/form&gt;
+                &lt;/div&gt;
+              &lt;/td&gt;
+              &lt;td&gt;&lt;?= number_format($l['st']) ?&gt; FCFA&lt;/td&gt;
+              &lt;td&gt;
+                &lt;!-- Formulaire pour supprimer l'article --&gt;
+                &lt;form action="panier.php" method="post"&gt;
+                  &lt;input type="hidden" name="product_id" value="&lt;?= $l['p']['id'] ?&gt;"&gt;
+                  &lt;button type="submit" name="action" value="remove" class="btn-del"&gt;&amp;times;&lt;/button&gt;
+                &lt;/form&gt;
+              &lt;/td&gt;
+            &lt;/tr&gt;
+          &lt;?php endforeach; ?&gt;
+        &lt;/tbody&gt;
+      &lt;/table&gt;
+    &lt;/div&gt;
+
+    &lt;!-- Pied de page du panier avec total et boutons d'action --&gt;
+    &lt;div class="cart-footer"&gt;
+      &lt;div class="total"&gt;Total : &lt;?= number_format($total) ?&gt; FCFA&lt;/div&gt;
+      &lt;div&gt;
+        &lt;a href="index.php" class="btn-outline"&gt;Continuer mes achats&lt;/a&gt;
+        &lt;a href="checkout.php" class="btn-cta"&gt;Passer à la caisse&lt;/a&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;?php endif; ?&gt;
+&lt;/section&gt;
+
+&lt;?php include 'inc/footer.php'; ?&gt;
+    </code></pre>
+    <p><strong>Explications du Code :</strong></p>
+    <ul>
+        <li><code>$lignes = []; $total = 0;</code>: Initialisation des variables qui contiendront les détails des articles du panier et le total.</li>
+        <li><code>if (!empty($_SESSION['cart'])) { ... }</code>: Ce bloc s'exécute uniquement si le panier en session n'est pas vide.</li>
+        <li><code>foreach ($_SESSION['cart'] as $id => $qte)</code>: Boucle sur chaque article dans le panier de la session, où <code>$id</code> est l'ID du produit et <code>$qte</code> est sa quantité.</li>
+        <li><code>foreach ($produits as $p)</code>: Boucle interne pour trouver les détails complets du produit (<code>$p</code>) correspondant à l'<code>$id</code> actuel du panier.</li>
+        <li><code>$lignes[] = ['p'=>$p,'q'=>$qte,'st'=>$p['prix']*$qte];</code>: Une fois le produit trouvé, ses détails, la quantité et le sous-total sont ajoutés au tableau <code>$lignes</code>.</li>
+        <li><code>$total += $p['prix'] * $qte;</code>: Le sous-total de l'article est ajouté au total général du panier.</li>
+        <li><code>if (empty($lignes))</code>: Condition qui vérifie si le panier est vide après avoir tenté de le construire. Si c'est le cas, un message "Votre panier est vide" s'affiche avec un bouton pour retourner à la boutique.</li>
+        <li><strong>Tableau du Panier (<code>&lt;table class="premium-table"&gt;</code>)</strong>:
+            <ul>
+                <li>Les en-têtes de colonne (<code>&lt;thead&gt;</code>) sont définis.</li>
+                <li>La boucle <code>foreach ($lignes as $l)</code> génère une ligne de tableau (<code>&lt;tr&gt;</code>) pour chaque article du panier.</li>
+                <li><code>&lt;td&gt;</code> pour le produit : Affiche l'image, le nom de l'article (<code>item-name</code>).</li>
+                <li><code>&lt;td&gt;</code> pour le prix unitaire : Utilise <code>number_format()</code> pour un affichage lisible.</li>
+                <li><code>&lt;td&gt;</code> pour la quantité : Contient le <code>stepper-form</code> avec des formulaires distincts pour les boutons <code>-</code> et <code>+</code>. Chaque bouton est un <code>submit</code> qui envoie l'ID du produit et l'action (<code>decrease</code> ou <code>increase</code>) à <code>panier.php</code>.</li>
+                <li><code>&lt;td&gt;</code> pour le sous-total : Affiche le sous-total pour cette ligne d'article.</li>
+                <li><code>&lt;td&gt;</code> pour l'action de suppression : Un formulaire avec un bouton <code>&amp;times;</code> (symbole de multiplication/fermeture) pour supprimer l'article (<code>action="remove"</code>).</li>
+            </ul>
+        </li>
+        <li><strong>Pied de page du panier (<code>.cart-footer</code>)</strong>: Affiche le total général du panier et les boutons "Continuer mes achats" (qui ramène à <code>index.php</code>) et "Passer à la caisse" (qui mène à <code>checkout.php</code>).</li>
+    </ul>
+
+    <h2 id="ch4-3">3.3 Conclusion du Chapitre</h2>
+    <p>Ce chapitre a été fondamental pour comprendre la logique derrière la gestion d'un panier d'achat dans une application e-commerce. Nous avons vu comment les sessions PHP sont utilisées pour maintenir l'état du panier d'un utilisateur, comment les actions (ajouter, modifier la quantité, supprimer) sont traitées, et comment le contenu du panier est affiché dynamiquement avec un calcul du total.</p>
+    <p>La redirection après chaque action POST est une pratique de sécurité et d'expérience utilisateur essentielle pour éviter les soumissions multiples.</p>
+    <p>Dans le prochain chapitre, nous aborderons l'étape cruciale de la finalisation de la commande. Nous verrons comment collecter les informations nécessaires auprès du client et, surtout, comment initier une transaction de paiement sécurisée via la passerelle FedaPay.</p>
+
+    ---
+
+    <h1 id="ch5">La Caisse – Finaliser la Commande (`checkout.php`)</h1>
+    <p>Le processus de paiement (ou "checkout") est l'étape la plus critique d'une boutique en ligne. C'est là que le client fournit ses informations de contact et de livraison, et surtout, qu'il procède au paiement. Une expérience de paiement fluide et sécurisée est essentielle pour convertir les paniers en ventes réussies. Dans ce chapitre, nous allons détailler le fichier <code>checkout.php</code>, qui orchestre cette étape clé, notamment via l'intégration de la passerelle de paiement **FedaPay**.</p>
+
+    <h2 id="ch5-1">4.1 Préparation et Vérification du Panier</h2>
+    <p>Avant de présenter le formulaire de paiement, il est impératif de s'assurer que le panier n'est pas vide et de recalculer le total. Cela garantit que seule une commande valide peut être initiée.</p>
+    <pre><code class="language-php">
+&lt;?php
+// DOIT ÊTRE LA PREMIÈRE LIGNE EXÉCUTABLE
+session_start();
+
+// Configuration pour afficher toutes les erreurs pendant le développement
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL & ~E_DEPRECATED & ~E_NOTICE);
+
+/* ---------- LISTE DES PRODUITS (Identique à index.php et panier.php) ---------- */
+$produits = [
+    ['id' => 1, 'nom' => 'Rolex Submariner', 'prix' => 19000, 'image' => 'pictures/picture1.jpg'],
+    ['id' => 2, 'nom' => 'Rolex Daytona',        'prix' => 29990, 'image' => 'pictures/picture22.jpg'],
+    ['id' => 3, 'nom' => 'Rolex Datejust',            'prix' => 38700, 'image' => 'pictures/picture3.jpg'],
+    ['id' => 4, 'nom' => 'Rolex GMT-Master II Batman',      'prix' => 15000, 'image' => 'pictures/picture4.jpg'],
+    ['id' => 5, 'nom' => 'Rolex Yacht-Master Rhodium',           'prix' => 22000, 'image' => 'pictures/picture5.jpg'],
+    ['id' => 6, 'nom' => 'Rolex Day-Date',           'prix' => 37000, 'image' => 'pictures/picture6.jpg']
+];
+
+/* ---------- CONSTRUCTION DU PANIER POUR LE RÉCAPITULATIF ---------- */
+$lignes = [];
+$total  = 0;
+if (!empty($_SESSION['cart'])) {
+    foreach ($_SESSION['cart'] as $id => $qte) {
+        foreach ($produits as $p) {
+            if ($p['id'] == $id) {
+                $lignes[] = ['p'=>$p,'q'=>$qte,'st'=>$p['prix']*$qte];
+                $total   += $p['prix'] * $qte;
+                break;
+            }
+        }
+    }
+}
+
+// Redirige vers la page d'accueil si le panier est vide (pas de commande à finaliser)
+if ($total === 0) {
+    $_SESSION['flash_message'] = "Votre panier est vide. Veuillez ajouter des articles avant de procéder au paiement.";
+    header("Location: index.php");
+    exit();
+}
+?&gt;
+    </code></pre>
+    <p><strong>Explications du Code :</strong></p>
+    <ul>
+        <li><strong>Initialisation et <code>$produits</code> :</strong> Comme pour <code>index.php</code> et <code>panier.php</code>, nous commençons par <code>session_start()</code> et chargeons la même liste de produits.</li>
+        <li><strong>Reconstruction du Panier :</strong> Le code recalcule les <code>$lignes</code> et le <code>$total</code> à partir de <code>$_SESSION['cart']</code>. Cette étape est cruciale pour afficher un récapitulatif précis au client et pour que FedaPay reçoive le bon montant.</li>
+        <li><strong>Redirection si Panier Vide :</strong> La condition <code>if ($total === 0)</code> est une mesure de sécurité et d'UX. Si le panier est vide (par exemple, si l'utilisateur essaie d'accéder directement à <code>checkout.php</code> ou si sa session a expiré), il est redirigé vers la page d'accueil avec un message flash.</li>
+    </ul>
+
+    <h2 id="ch5-2">4.2 Intégration de FedaPay et Traitement du Formulaire</h2>
+    <p>C'est la section la plus importante, car elle gère la logique de paiement. Nous incluons l'SDK FedaPay, configurons nos identifiants, puis traitons les données du formulaire client pour créer et initier la transaction.</p>
+    <pre><code class="language-php">
+&lt;?php
+/* ---------- FEDAPAY CONFIGURATION ET TRAITEMENT POST ---------- */
+require 'vendor/autoload.php'; // Charge l'autoloader de Composer pour FedaPay
+use FedaPay\Transaction;
+use FedaPay\FedaPay;
+
+// Configure l'API FedaPay avec votre clé secrète et l'environnement
+// REMPLACEZ 'sk_sandbox_CKBmUR3L8rAh90BtdpQ3XLHJ' par votre CLÉ SECRÈTE API Sandbox réelle
+FedaPay::setApiKey('sk_sandbox_CKBmUR3L8rAh90BtdpQ3XLHJ');
+FedaPay::setEnvironment('sandbox'); // Environnement de test (sandbox), à changer en 'production' pour un site réel
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Récupération et sanitisation des données du formulaire
+    $nom       = htmlspecialchars(trim($_POST['nom'] ?? ''));
+    $prenom    = htmlspecialchars(trim($_POST['prenom'] ?? ''));
+    $email     = filter_var(trim($_POST['email'] ?? ''), FILTER_VALIDATE_EMAIL); // Validation de l'email
+    $tel       = htmlspecialchars(trim($_POST['tel'] ?? ''));
+    $ville     = htmlspecialchars(trim($_POST['ville'] ?? ''));
+    $quartier  = htmlspecialchars(trim($_POST['quartier'] ?? ''));
+
+    // --- Validation Serveur (CRITIQUE pour la sécurité !) ---
+    $errors = [];
+    if (empty($nom)) $errors[] = "Le nom est requis.";
+    if (empty($prenom)) $errors[] = "Le prénom est requis.";
+    if (!$email) $errors[] = "L'adresse email est invalide ou manquante.";
+    if (empty($tel) || !preg_match("/^\d{8,15}$/", $tel)) $errors[] = "Le numéro de téléphone est invalide (8 à 15 chiffres).";
+    if (empty($ville)) $errors[] = "La ville est requise.";
+    if (empty($quartier)) $errors[] = "Le quartier est requis.";
+
+    if (!empty($errors)) {
+        $_SESSION['flash_message'] = implode("&lt;br&gt;", $errors);
+        header("Location: checkout.php");
+        exit();
+    }
+
+    // URL de rappel après le paiement (à configurer pour votre environnement)
+    $callback = "http://localhost/kkline/callback.php";
+    // Pour une production : $callback = "https://votresite.com/callback.php";
+
+    // Description de la transaction pour FedaPay
+    $desc     = "Achat : ".implode(', ', array_map(fn($l)=&gt;$l['p']['nom']." x".$l['q'], $lignes));
+    // Limite la description à 255 caractères, comme souvent requis par les API de paiement
+    $desc_fedapay = mb_substr($desc, 0, 255, 'UTF-8');
+
+    try {
+        // Création de la transaction via l'API FedaPay
+        $transaction = Transaction::create([
+            "description"  =&gt; $desc_fedapay,
+            "amount"       =&gt; $total,
+            "currency"     =&gt; ["iso"=&gt;"XOF"], // Devise : Franc CFA d'Afrique de l'Ouest
+            "callback_url" =&gt; $callback,
+            "customer"     =&gt; [ // Informations du client
+                "firstname"    =&gt; $prenom,
+                "lastname"     =&gt; $nom,
+                "email"        =&gt; $email,
+                "phone_number" =&gt; ["number"=&gt;$tel,"country"=&gt;"bj"] // Numéro de téléphone pour le Bénin
+            ]
+        ]);
+
+        // Génération du jeton de paiement et redirection vers l'URL de paiement FedaPay
+        $token = $transaction-&gt;generateToken();
+
+        // Une fois la transaction initiée, vide le panier de la session
+        unset($_SESSION['cart']);
+
+        // Redirige le client vers la page de paiement de FedaPay
+        header("Location: ".$token-&gt;url);
+        exit();
+
+    } catch (\FedaPay\Error\BaseError $e) { // Capture toutes les erreurs FedaPay
+        $_SESSION['flash_message'] = "Erreur de paiement : " . $e-&gt;getMessage();
+        // Pour le débogage, vous pourriez aussi logguer $e-&gt;getFedaPayError()
+        header("Location: panier.php"); // Redirige vers le panier en cas d'erreur
+        exit();
+    } catch (Exception $e) { // Capture les autres erreurs inattendues
+        $_SESSION['flash_message'] = "Une erreur inattendue est survenue : " . $e-&gt;getMessage();
+        header("Location: panier.php");
+        exit();
+    }
+}
+
+// Inclusion de l'en-tête de la page et affichage des messages flash
+include 'inc/header.php';
+if (isset($_SESSION['flash_message'])) {
+    echo "&lt;div class='alert-premium'&gt;{$_SESSION['flash_message']}&lt;/div&gt;";
+    unset($_SESSION['flash_message']);
+}
+?&gt;
+    </code></pre>
+    <p><strong>Explications du Code :</strong></p>
+    <ul>
+        <li><strong><code>require 'vendor/autoload.php';</code></strong> : Cette ligne est essentielle. Elle charge l'autoloader de Composer, qui permet à PHP de trouver et d'inclure automatiquement les classes du SDK FedaPay (comme <code>FedaPay\Transaction</code>).</li>
+        <li><strong><code>use FedaPay\Transaction; use FedaPay\FedaPay;</code></strong> : Ces déclarations <code>use</code> rendent les classes <code>Transaction</code> et <code>FedaPay</code> directement accessibles sans avoir à préfixer leur nom complet (<code>\FedaPay\Transaction</code>).</li>
+        <li><strong><code>FedaPay::setApiKey(...)</code> et <code>FedaPay::setEnvironment(...)</code> :</strong> C'est ici que vous configurez votre connexion à l'API FedaPay.
+            <ul>
+                <li><code>setApiKey</code> : Utilisez votre clé secrète API. Pour les tests, c'est une clé <code>sk_sandbox_...</code>. <strong>N'utilisez jamais votre clé secrète directement dans le code JavaScript côté client.</strong></li>
+                <li><code>setEnvironment</code> : Doit être <code>sandbox</code> pour le développement/test et <code>production</code> lorsque votre site est en ligne.</li>
+            </ul>
+        </li>
+        <li><strong><code>if ($_SERVER['REQUEST_METHOD'] === 'POST')</code> :</strong> Ce bloc ne s'exécute que lorsque le formulaire de paiement est soumis.</li>
+        <li><strong>Récupération et Sanitisation des Données :</strong>
+            <ul>
+                <li><code>htmlspecialchars(trim($_POST['...']))</code> : **Crucial pour la sécurité !** <code>trim()</code> supprime les espaces inutiles au début et à la fin des chaînes. <code>htmlspecialchars()</code> convertit les caractères spéciaux en entités HTML, prévenant ainsi les **attaques XSS (Cross-Site Scripting)** si ces données devaient être affichées à nouveau sur une page HTML.</li>
+                <li><code>filter_var(..., FILTER_VALIDATE_EMAIL)</code> : Valide le format de l'adresse email. Si l'email n'est pas valide, <code>$email</code> sera <code>false</code>.</li>
+                <li><code>preg_match("/^\d{8,15}$/", $tel)</code> : Validation basique du numéro de téléphone pour s'assurer qu'il contient entre 8 et 15 chiffres.</li>
+            </ul>
+        </li>
+        <li><strong>Validation Serveur (<code>$errors</code> array) :</strong> C'est une **étape de sécurité fondamentale**.
+            <ul>
+                <li>Alors que les attributs <code>required</code> en HTML sont utiles côté client, ils peuvent être facilement contournés. La validation côté serveur est indispensable pour s'assurer que toutes les données requises sont présentes et dans un format correct.</li>
+                <li>Si des erreurs sont trouvées, elles sont regroupées, stockées dans un message flash, et l'utilisateur est redirigé vers la page de paiement pour corriger les informations.</li>
+            </ul>
+        </li>
+        <li><strong><code>$callback</code> :</strong> L'URL à laquelle FedaPay renverra le navigateur du client une fois la transaction terminée (réussie, échouée ou en attente). **Assurez-vous que cette URL est accessible publiquement sur votre serveur une fois en production.**</li>
+        <li><strong><code>$desc_fedapay</code> :</strong> Une description de la transaction, souvent affichée au client sur la page de paiement FedaPay. Nous utilisons <code>mb_substr</code> pour nous assurer que la description ne dépasse pas la limite de 255 caractères imposée par FedaPay.</li>
+        <li><strong><code>Transaction::create([...])</code> :</strong> L'appel principal à l'API FedaPay pour créer une nouvelle transaction.
+            <ul>
+                <li><code>description</code>, <code>amount</code>, <code>currency</code>, <code>callback_url</code> sont les paramètres standards.</li>
+                <li><code>customer</code> : Contient les détails du client. Notez le format pour <code>phone_number</code> qui inclut le <code>number</code> et le <code>country</code> (<code>bj</code> pour le Bénin).</li>
+            </ul>
+        </li>
+        <li><strong><code>$token = $transaction-&gt;generateToken();</code> :</strong> Une fois la transaction créée, cette méthode génère un jeton sécurisé qui contient l'URL vers laquelle le client doit être redirigé pour effectuer le paiement.</li>
+        <li><strong><code>unset($_SESSION['cart']);</code> :</strong> **Crucial !** Une fois que la transaction est initiée et que le client est redirigé vers FedaPay, le panier en session est vidé. Cela empêche l'utilisateur de soumettre la même commande plusieurs fois s'il revient sur la page sans avoir terminé le paiement.</li>
+        <li><strong><code>header("Location: ".$token-&gt;url); exit();</code> :</strong> Redirige le navigateur du client vers la page de paiement hébergée par FedaPay.</li>
+        <li><strong>Gestion des Erreurs (<code>try-catch</code>) :</strong>
+            <ul>
+                <li><code>\FedaPay\Error\BaseError $e</code> : Capture toutes les exceptions spécifiques à FedaPay. Cela permet de donner un feedback pertinent au client si quelque chose ne va pas avec la requête à l'API FedaPay.</li>
+                <li><code>Exception $e</code> : Une capture générique pour toute autre erreur inattendue qui pourrait survenir.</li>
+            </ul>
+        </li>
+    </ul>
+
+    <h2 id="ch5-3">4.3 Structure HTML du Formulaire de Paiement</h2>
+    <p>Après le traitement PHP, la partie HTML de la page <code>checkout.php</code> affiche le récapitulatif de la commande et le formulaire où le client saisit ses informations.</p>
+    <pre><code class="language-html">
+&lt;!-- =================  CHECKOUT PREMIUM  ================= --&gt;
+&lt;section class="checkout-wrapper"&gt;
+  &lt;div class="container narrow"&gt;
+    &lt;h1 class="neon-title"&gt;Finaliser la commande&lt;/h1&gt;
+
+    &lt;!-- Récapitulatif --&gt;
+    &lt;div class="recap-box"&gt;
+      &lt;h2 class="recap-title"&gt;Récapitulatif de votre commande&lt;/h2&gt;
+      &lt;?php foreach ($lignes as $l): ?&gt;
+        &lt;div class="recap-item"&gt;
+          &lt;span&gt;&lt;?= $l['p']['nom'] ?&gt; (x&lt;?= $l['q'] ?&gt;)&lt;/span&gt;
+          &lt;span&gt;&lt;?= number_format($l['st']) ?&gt; FCFA&lt;/span&gt;
+        &lt;/div&gt;
+      &lt;?php endforeach; ?&gt;
+      &lt;div class="recap-total"&gt;Total à payer : &lt;?= number_format($total) ?&gt; FCFA&lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;!-- Formulaire --&gt;
+    &lt;form action="checkout.php" method="post" class="checkout-form"&gt;
+      &lt;h2 class="form-title"&gt;Vos informations de contact&lt;/h2&gt;
+
+      &lt;div class="form-row"&gt;
+        &lt;input type="text" name="nom" placeholder="Nom" required&gt;
+        &lt;input type="text" name="prenom" placeholder="Prénom" required&gt;
+      &lt;/div&gt;
+
+      &lt;input type="email" name="email" placeholder="Email" required&gt;
+      &lt;input type="tel"   name="tel"   placeholder="Téléphone (ex: 97000000)" required pattern="\d{8,15}"&gt;
+
+      &lt;!-- ===== Informations de livraison ===== --&gt;
+      &lt;h2 class="form-title mt-4"&gt;Adresse de livraison&lt;/h2&gt;
+      &lt;div class="form-row"&gt;
+        &lt;input type="text" name="ville" placeholder="Ville" required&gt;
+        &lt;input type="text" name="quartier" placeholder="Quartier" required&gt;
+      &lt;/div&gt;
+      &lt;div class="form-row"&gt;
+        &lt;input type="text" name="pays" value="Bénin" readonly&gt;
+      &lt;/div&gt;
+
+      &lt;!-- ===== Bouton de paiement ===== --&gt;
+      &lt;button type="submit" class="btn-cta btn-block"&gt;
+        Payer &lt;?= number_format($total) ?&gt; FCFA
+      &lt;/button&gt;
+    &lt;/form&gt;
+  &lt;/div&gt;
+&lt;/section&gt;
+
+&lt;?php include 'inc/footer.php'; ?&gt;
+    </code></pre>
+    <p><strong>Explications du Code :</strong></p>
+    <ul>
+        <li><strong><code>neon-title</code> :</strong> Le titre principal de la page, stylisé avec un effet néon comme vu dans le chapitre CSS.</li>
+        <li><strong>Récapitulatif (<code>.recap-box</code>) :</strong> Affiche un résumé détaillé des articles dans le panier, y compris les noms des produits, les quantités et les sous-totaux, ainsi que le montant total à payer. Cela aide à rassurer le client sur ce qu'il commande.</li>
+        <li><strong>Formulaire de Contact et Livraison (<code>.checkout-form</code>) :</strong>
+            <ul>
+                <li>Les champs <code>input</code> collectent les informations nécessaires.</li>
+                <li><code>name</code> : Indispensable pour que les données soient envoyées à PHP via <code>$_POST</code>.</li>
+                <li><code>placeholder</code> : Texte indicatif pour les champs vides.</li>
+                <li><code>required</code> : Attribut HTML5 qui rend le champ obligatoire pour la soumission du formulaire côté client.</li>
+                <li><code>pattern="\d{8,15}"</code> : Valide que le champ téléphone contient 8 à 15 chiffres.</li>
+                <li><code>readonly</code> : Le champ "Pays" est en lecture seule, ce qui signifie que le client ne peut pas le modifier.</li>
+            </ul>
+        </li>
+        <li><strong>Bouton de Paiement (<code>.btn-cta btn-block</code>) :</strong> Le bouton de soumission du formulaire. Le texte <code>Payer X FCFA</code> est dynamique et affiche le montant total réel de la commande, offrant une confirmation finale au client.</li>
+    </ul>
+
+    <h2 id="ch5-4">4.4 Conclusion du Chapitre</h2>
+    <p>Le chapitre sur la page de paiement (<code>checkout.php</code>) a été l'un des plus denses, et pour cause : il est au cœur de la conversion de visiteurs en clients. Nous avons détaillé le processus de sécurisation de la collecte des données via la validation côté serveur, et surtout, l'intégration fondamentale de la passerelle de paiement FedaPay. Vous avez appris à initialiser une transaction, à y inclure les informations client et commande, et à rediriger l'utilisateur vers le portail de paiement.</p>
+    <p>Cependant, le processus ne s'arrête pas là. Une fois que le client a interagi avec FedaPay, il est redirigé vers une page de rappel (<code>callback.php</code>), dont le rôle est de confirmer le succès ou l'échec du paiement et de mettre à jour l'état de la commande.</p>
+    <p>Dans le prochain et dernier chapitre technique, nous aborderons la page de rappel (<code>callback.php</code>), qui est essentielle pour finaliser le cycle de vie de la commande et assurer la sécurité de votre système.</p>
+
+    ---
+
+    <h1 id="ch6">Confirmation et Sécurité – Le Rappel de Paiement (`callback.php`)</h1>
+    <p>Après qu'un client a été redirigé vers la page de paiement de FedaPay et a effectué sa transaction, FedaPay renvoie le client vers une URL de rappel que nous avons spécifiée (<code>callback.php</code>). Le rôle de ce script est crucial : il doit récupérer le statut final de la transaction, informer le client du résultat et, surtout, mettre à jour l'état de la commande dans votre système.</p>
+    <p>Ce chapitre est particulièrement important pour la **sécurité et la fiabilité** de votre boutique. C'est ici que vous confirmez que le paiement a bien eu lieu avant de considérer une commande comme finalisée.</p>
+
+    <h2 id="ch6-1">5.1 Initialisation et Récupération de la Transaction</h2>
+    <p>Le script commence par les initialisations habituelles (session, autoloader FedaPay) et tente de récupérer l'ID de la transaction depuis l'URL. Cet ID est ensuite utilisé pour interroger FedaPay et obtenir le statut officiel de la transaction.</p>
+    <pre><code class="language-php">
+&lt;?php
+// DOIT ÊTRE LA PREMIÈRE LIGNE EXÉCUTABLE
+session_start();
+
+require 'vendor/autoload.php'; // Charge l'autoloader de Composer pour FedaPay
+
+use FedaPay\Transaction;
+use FedaPay\FedaPay;
+
+// Configurer votre environnement FedaPay (DOIT CORRESPONDRE À CHECKOUT.PHP)
+// REMPLACEZ 'sk_sandbox_CKBmUR3L8rAh90BtdpQ3XLHJ' par votre CLÉ SECRÈTE API Sandbox réelle
+FedaPay::setApiKey('sk_sandbox_CKBmUR3L8rAh90BtdpQ3XLHJ');
+FedaPay::setEnvironment('sandbox'); // Environnement de test, doit correspondre à celui de index.php
+
+try {
+    // Récupération de l'ID de la transaction depuis l'URL
+    if (!isset($_GET['id'])) {
+        throw new Exception("ID de transaction non fourni dans l'URL de rappel.");
+    }
+
+    $transaction = Transaction::retrieve($_GET['id']); // Récupère les détails de la transaction
+    $status = $transaction-&gt;status; // Statut du paiement (e.g., 'approved', 'pending', 'failed')
+
+    // Enregistrer le message flash dans la session en fonction du statut
+    if ($status === 'approved') {
+        $_SESSION['flash_message'] = "Paiement réussi ! Votre commande a été confirmée.";
+        // === POINT CRITIQUE : LOGIQUE DE MISE À JOUR DE LA COMMANDE ===
+        // Ici, vous ajouteriez la logique pour :
+        // 1. Marquer la commande comme payée dans votre base de données.
+        // 2. Décrémenter les stocks des produits achetés.
+        // 3. Envoyer un email de confirmation de commande au client.
+        // 4. Gérer l'idempotence : s'assurer que cette logique ne s'exécute qu'une seule fois
+        //    même si FedaPay appelle cette URL plusieurs fois pour la même transaction.
+        //    (Ex: Vérifier si la transaction est déjà marquée comme "payée" avant de la traiter).
+        // =============================================================
+    } elseif ($status === 'pending') {
+        $_SESSION['flash_message'] = "Paiement en attente. Veuillez vérifier votre téléphone pour confirmer la transaction.";
+    } else {
+        $_SESSION['flash_message'] = "Échec du paiement. Statut : " . $status . ". Veuillez réessayer ou contacter le support.";
+        // Ici, vous pourriez ajouter de la logique pour marquer la commande comme échouée ou annulée
+    }
+
+} catch (\FedaPay\Error\ApiConnectionError $e) {
+    $_SESSION['flash_message'] = "Erreur de connexion à l'API FedaPay lors du rappel : " . $e-&gt;getMessage();
+} catch (\FedaPay\Error\InvalidRequestError $e) {
+    $_SESSION['flash_message'] = "Erreur de requête invalide avec FedaPay lors du rappel : " . $e-&gt;getMessage();
+} catch (\FedaPay\Error\ApiError $e) {
+    $_SESSION['flash_message'] = "Erreur API FedaPay lors du rappel : " . $e-&gt;getMessage();
+} catch (Exception $e) {
+    $_SESSION['flash_message'] = "Une erreur inattendue est survenue : " . $e-&gt;getMessage();
+}
+
+// Rediriger vers index.php avec un message flash
+header("Location: index.php");
+exit();
+?&gt;
+    </code></pre>
+    <p><strong>Explications du Code :</strong></p>
+    <ul>
+        <li><strong><code>session_start();</code> et <code>require 'vendor/autoload.php';</code> :</strong> Les mêmes initialisations que dans les chapitres précédents.</li>
+        <li><strong><code>FedaPay::setApiKey(...)</code> et <code>FedaPay::setEnvironment(...)</code> :</strong> La configuration de l'API FedaPay doit être **identique** à celle de <code>checkout.php</code>. Il est crucial que l'environnement (<code>sandbox</code> ou <code>production</code>) et la clé API correspondent.</li>
+        <li><strong>Bloc <code>try-catch</code> :</strong> Ce bloc est essentiel pour gérer les erreurs qui peuvent survenir lors de la communication avec FedaPay ou lors du traitement du rappel.
+            <ul>
+                <li><code>if (!isset($_GET['id'])) { throw new Exception(...) }</code> : Vérifie si l'ID de la transaction est bien présent dans les paramètres de l'URL. Si ce n'est pas le cas, c'est une erreur, car FedaPay devrait toujours le fournir.</li>
+                <li><code>$transaction = Transaction::retrieve($_GET['id']);</code> : C'est l'appel clé. Il utilise l'ID de la transaction pour interroger l'API FedaPay et obtenir tous les détails, y compris le statut final.</li>
+                <li><code>$status = $transaction-&gt;status;</code> : Récupère le statut de la transaction (par exemple, "approved", "pending", "failed", "canceled").</li>
+            </ul>
+        </li>
+        <li><strong>Gestion des Statuts de Paiement :</strong>
+            <ul>
+                <li><code>if ($status === 'approved')</code> : Si le paiement est approuvé, c'est le moment d'exécuter la logique métier critique :
+                    <ol>
+                        <li>**Mettre à jour la base de données :** Marquer la commande correspondante comme "payée" ou "confirmée".</li>
+                        <li>**Gérer les stocks :** Décrémenter les quantités des produits achetés dans votre inventaire.</li>
+                        <li>**Envoyer des notifications :** Envoyer un email de confirmation de commande au client et, potentiellement, une notification à l'administrateur de la boutique.</li>
+                        <li>**Idempotence :** C'est un concept **fondamental** en intégration de paiement. Les webhooks (et les rappels client-side comme celui-ci) peuvent parfois être envoyés plusieurs fois par la passerelle de paiement (par exemple, en cas de problèmes réseau ou de retries). Votre système doit être conçu pour traiter chaque transaction **une seule fois**, même si le <code>callback.php</code> est appelé plusieurs fois pour le même ID de transaction. Cela se fait généralement en vérifiant le statut de la commande dans votre base de données avant d'appliquer les changements (par exemple, si la commande est déjà marquée comme "payée", ne faites rien).</li>
+                    </ol>
+                </li>
+                <li><code>elseif ($status === 'pending')</code> : Le paiement est en attente (par exemple, si une confirmation par SMS est requise). Le client est informé qu'il doit vérifier son téléphone.</li>
+                <li><code>else</code> : Pour tous les autres statuts (échoué, annulé, etc.), un message d'échec est affiché.</li>
+            </ul>
+        </li>
+        <li><strong>Gestion des Erreurs FedaPay :</strong> Les blocs <code>catch</code> spécifiques (<code>ApiConnectionError</code>, <code>InvalidRequestError</code>, <code>ApiError</code>) capturent les erreurs renvoyées par l'API FedaPay, permettant de fournir un message d'erreur plus précis au client. Le <code>catch (Exception $e)</code> final attrape toutes les autres erreurs inattendues.</li>
+        <li><strong><code>header("Location: index.php"); exit();</code> :</strong> Après le traitement, le client est toujours redirigé vers la page d'accueil (<code>index.php</code>). Le message flash stocké en session s'affichera alors, informant le client du résultat de son paiement.</li>
+    </ul>
+
+    <h2 id="ch6-2">5.2 Points Cruciaux pour la Production (Récapitulatif et Approfondissement)</h2>
+    <p>Comme mentionné dans l'introduction de cet ebook et dans le chapitre précédent, le <code>callback.php</code> est un point d'entrée sensible. Voici un récapitulatif des mesures de sécurité et de robustesse indispensables avant de déployer en production :</p>
+    <ol>
+        <li><strong>Vérification de la Signature du Webhook (Sécurité Maximale) :</strong>
+            <ul>
+                <li><strong>Concept :</strong> FedaPay peut envoyer des "webhooks" (notifications serveur à serveur) à une URL que vous configurez. Ces webhooks incluent une signature cryptographique dans leurs en-têtes.</li>
+                <li><strong>Pourquoi ?</strong> Pour garantir que la notification vient bien de FedaPay et n'a pas été falsifiée. Le <code>callback.php</code> que nous avons ici est un "client-side callback" (le client est redirigé), ce qui est moins sécurisé qu'un webhook serveur-à-serveur pour la confirmation finale.</li>
+                <li><strong>Recommandation :</strong> Pour une application de production, il est **fortement recommandé** d'utiliser les webhooks de FedaPay pour la confirmation finale de la commande. Votre script de webhook recevrait la notification directement de FedaPay et vérifierait la signature avant de mettre à jour la commande. Le <code>callback.php</code> actuel pourrait alors simplement afficher un message générique et rediriger.</li>
+            </ul>
+        </li>
+        <li><strong>Idempotence : Traiter Chaque Transaction Une Seule Fois :</strong>
+            <ul>
+                <li><strong>Concept :</strong> Assurez-vous que la logique de mise à jour de la commande (marquer comme payée, décrémenter les stocks) ne s'exécute qu'une seule fois pour un ID de transaction donné.</li>
+                <li><strong>Mise en œuvre :</strong>
+                    <ul>
+                        <li>Lorsque vous créez la commande dans votre base de données (avant le paiement), enregistrez l'ID de transaction FedaPay (qui est disponible après <code>Transaction::create()</code>).</li>
+                        <li>Dans <code>callback.php</code> (ou votre webhook), avant de marquer la commande comme payée, vérifiez si elle est *déjà* marquée comme payée pour cet ID de transaction. Si oui, ne faites rien.</li>
+                        <li>Utilisez des verrous de base de données si nécessaire pour les opérations concurrentes.</li>
+                    </ul>
+                </li>
+            </ul>
+        </li>
+        <li><strong>Gestion des Erreurs et Journalisation (Logging) :</strong>
+            <ul>
+                <li><strong>En production, désactivez l'affichage des erreurs</strong> (<code>display_errors = 0</code>).</li>
+                <li><strong>Implémentez un système de journalisation robuste.</strong> Chaque transaction, son statut, et toute erreur rencontrée dans <code>callback.php</code> (et <code>checkout.php</code>) doivent être enregistrés dans des fichiers journaux. Cela est vital pour le débogage, l'audit et la résolution des litiges.</li>
+            </ul>
+        </li>
+        <li><strong>Gestion des Stocks :</strong>
+            <ul>
+                <li>Pour éviter la survente, la décrémentation des stocks doit être gérée avec soin. Pour les produits à très faible stock, vous pourriez envisager de "réserver" le stock au moment où l'article est ajouté au panier ou au début du processus de paiement, et de le libérer si le paiement échoue ou n'est pas terminé.</li>
+            </ul>
+        </li>
+        <li><strong>Notifications Utilisateur et Administrateur :</strong>
+            <ul>
+                <li>Confirmez toujours au client par email que sa commande est passée et payée.</li>
+                <li>Notifiez l'administrateur de la boutique des nouvelles commandes.</li>
+            </ul>
+        </li>
+    </ol>
+
+    <h2 id="ch6-3">5.3 Conclusion : Prochaines Étapes et Aller Plus Loin</h2>
+    <p>Félicitations ! Vous avez parcouru les étapes clés de la création d'une boutique e-commerce. Ce projet est une excellente base, mais le monde du développement web est vaste et en constante évolution. Voici quelques pistes pour aller plus loin et améliorer votre boutique :</p>
+    <ol>
+        <li><strong>Base de Données Relationnelle (MySQL/PostgreSQL) :</strong>
+            <ul>
+                <li><strong>Pourquoi ?</strong> Pour gérer les produits, les utilisateurs, les commandes de manière dynamique et scalable. Les tableaux PHP statiques sont limités.</li>
+                <li><strong>Comment ?</strong> Apprenez le SQL, utilisez PDO (PHP Data Objects) pour interagir avec la base de données.</li>
+            </ul>
+        </li>
+        <li><strong>Système d'Authentification et de Gestion des Utilisateurs :</strong>
+            <ul>
+                <li>Permettez aux clients de créer des comptes, de se connecter, de consulter l'historique de leurs commandes.</li>
+                <li>Implémentez une gestion sécurisée des mots de passe (hachage).</li>
+            </ul>
+        </li>
+        <li><strong>Interface d'Administration (Back-Office) :</strong>
+            <ul>
+                <li>Créez une interface protégée par mot de passe pour que l'administrateur puisse ajouter/modifier des produits, gérer les commandes, consulter les statistiques.</li>
+            </ul>
+        </li>
+        <li><strong>Amélioration de l'Expérience Utilisateur (UX) :</strong>
+            <ul>
+                <li><strong>Validation de formulaire côté client plus avancée :</strong> Utilisez JavaScript pour des validations en temps réel avant la soumission.</li>
+                <li><strong>Chargement asynchrone (AJAX) :</strong> Pour des mises à jour du panier sans recharger toute la page.</li>
+                <li><strong>Recherche et Filtrage des produits.</strong></li>
+            </ul>
+        </li>
+        <li><strong>Optimisation des Performances :</strong>
+            <ul>
+                <li>Mise en cache (caching) des pages ou des données pour réduire le temps de chargement.</li>
+                <li>Optimisation des images.</li>
+            </ul>
+        </li>
+        <li><strong>Sécurité Avancée :</strong>
+            <ul>
+                <li><strong>HTTPS :</strong> Indispensable pour la sécurité des données transmises.</li>
+                <li><strong>Protection CSRF (Cross-Site Request Forgery) :</strong> Ajout de jetons de sécurité dans les formulaires.</li>
+                <li><strong>Protection contre les injections SQL</strong> (si vous utilisez une base de données).</li>
+            </ul>
+        </li>
+        <li><strong>Déploiement en Production :</strong>
+            <ul>
+                <li>Choisissez un hébergeur web.</li>
+                <li>Configurez votre serveur web (Apache/Nginx).</li>
+                <li>Passez FedaPay en mode <code>production</code> et utilisez vos clés API de production.</li>
+                <li>Mettez en place la journalisation des erreurs.</li>
+            </ul>
+        </li>
+        <li><strong>Autres Fonctionnalités E-commerce :</strong>
+            <ul>
+                <li>Gestion des variations de produits (taille, couleur).</li>
+                <li>Codes promotionnels.</li>
+                <li>Avis et évaluations de produits.</li>
+                <li>Intégration avec des services d'expédition.</li>
+            </ul>
+        </li>
+    </ol>
+    <p>Le développement web est un voyage continu d'apprentissage. Chaque fonctionnalité ajoutée et chaque problème résolu renforcent vos compétences. Nous espérons que cet ebook vous a donné l'élan nécessaire pour construire des applications web toujours plus sophistiquées et sécurisées.</p>
+    <p>Bonne continuation dans vos projets !</p>
+
+    <footer class="simple-footer">
+        <p>&copy; 2025 K-KLINE Watches - Formation e-commerce PHP & FedaPay</p>
+        <p class="no-print">
+            <a href="#" onclick="window.print()">🖨 Imprimer</a> |
+            <a href="https://github.com/votre-repo/ebook" target="_blank">GitHub</a>
+        </p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-php.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-css.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markup.min.js"></script>
+
+
+    <script>
+        // Mode sombre
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+            localStorage.setItem('theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light');
+        }
+
+        // Restaurer le thème
+        if (localStorage.getItem('theme') === 'dark') {
+            document.body.classList.add('dark-mode');
+        }
+
+        // Smooth scroll pour les ancres
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    targetElement.scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+
+        // Initialize Prism.js for code highlighting
+        Prism.highlightAll();
+    </script>
+</body>
+</html>
